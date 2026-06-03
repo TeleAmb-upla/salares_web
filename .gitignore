@@ -1,0 +1,19 @@
+# GeoTIFF grandes (generar localmente con scripts/)
+data/huasco/raster/**/*.tif
+data/huasco/raster/**/*.tif.ovr
+data/drone/*.tif
+data/drone/**/*.tif
+
+# Documentos internos (no servir en la web pública)
+data/huasco/documents/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini

@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salar de Huasco · Mapa dron</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <style>
+        :root {
+            --moss: #4a5d3f;
+            --moss-light: #6b7f5c;
+            --brick: #b54a32;
+            --brick-deep: #8f3828;
+            --orange: #d97a2e;
+            --pale: #f5e6b8;
+            --sand: #faf6ee;
+            --ink: #2a2620;
+            --muted: #5c564c;
+            --panel-w: clamp(300px, 30vw, 380px);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            font-family: 'DM Sans', system-ui, sans-serif;
+            font-size: 15px;
+            color: var(--ink);
+            background: #1a1814;
+        }
+        .app { display: flex; height: 100dvh; }
+        .panel {
+            width: var(--panel-w);
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(175deg, var(--sand) 0%, #efe6d4 38%, #e5d9c4 100%);
+            border-right: 1px solid rgba(74, 93, 63, 0.12);
+            box-shadow: 10px 0 36px rgba(42, 38, 32, 0.1);
+            z-index: 5;
+        }
+        .panel-head {
+            padding: 1.15rem 1.3rem 1rem;
+            border-bottom: 1px solid rgba(181, 74, 50, 0.1);
+            background: linear-gradient(135deg, rgba(245, 230, 184, 0.45) 0%, transparent 70%);
+        }
+        .panel-head .kicker {
+            font-size: 0.66rem;
+            font-weight: 700;
+            letter-spacing: 0.13em;
+            text-transform: uppercase;
+            color: var(--moss);
+        }
+        .panel-head h1 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: clamp(1.55rem, 3.2vw, 2rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-top: 0.3rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            background: linear-gradient(120deg, var(--brick-deep), var(--orange));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .panel-head .sub {
+            font-size: 0.82rem;
+            color: var(--muted);
+            margin-top: 0.35rem;
+            line-height: 1.4;
+        }
+        a.back {
+            display: inline-block;
+            margin-top: 0.55rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--moss);
+            text-decoration: none;
+        }
+        a.back:hover { color: var(--brick); text-decoration: underline; }
+        .panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem 1.2rem 1.3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.95rem;
+        }
+        .block {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            border-radius: 18px;
+            padding: 1rem 1.05rem;
+            box-shadow: 0 4px 18px rgba(42, 38, 32, 0.04);
+        }
+        .block label, .block .block-title {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--moss);
+            margin-bottom: 0.5rem;
+        }
+        select {
+            width: 100%;
+            padding: 0.58rem 0.7rem;
+            border-radius: 12px;
+            border: 1px solid rgba(74, 93, 63, 0.2);
+            background: #fff;
+            font: inherit;
+            color: var(--ink);
+        }
+        select:focus {
+            outline: 2px solid rgba(217, 122, 46, 0.35);
+            border-color: var(--orange);
+        }
+        .layer-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        .pill {
+            padding: 0.4rem 0.72rem;
+            border-radius: 999px;
+            border: 1.5px solid rgba(74, 93, 63, 0.22);
+            background: #fff;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--moss);
+            transition: all 0.12s ease;
+        }
+        .pill:hover {
+            border-color: var(--orange);
+            color: var(--brick);
+        }
+        .pill.active {
+            background: linear-gradient(135deg, var(--brick), var(--orange));
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(181, 74, 50, 0.3);
+        }
+        .hint {
+            font-size: 0.8rem;
+            color: var(--muted);
+            line-height: 1.45;
+            margin-top: 0.4rem;
+        }
+        #loadHint {
+            padding: 0.65rem 0.85rem;
+            border-radius: 12px;
+            background: rgba(181, 74, 50, 0.1);
+            color: var(--brick-deep);
+            font-size: 0.82rem;
+            border-left: 3px solid var(--brick);
+        }
+        #loadHint[hidden] { display: none; }
+        .map-stage { flex: 1; position: relative; min-width: 0; }
+        #mapa { position: absolute; inset: 0; background: #141210; }
+        .leaflet-container { font-family: inherit; background: #141210; }
+        .leaflet-control-zoom { border: none !important; border-radius: 12px !important; overflow: hidden; }
+        .map-note {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 800;
+            padding: 0.45rem 1rem;
+            border-radius: 999px;
+            background: rgba(42, 38, 32, 0.88);
+            color: var(--pale);
+            font-size: 0.78rem;
+            pointer-events: none;
+            max-width: 92%;
+            text-align: center;
+        }
+        .legend-rail {
+            position: absolute;
+            z-index: 800;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .legend-rail--left { left: 14px; }
+        .legend-rail--right { right: 14px; }
+        .map-legend-dock {
+            background: rgba(250, 246, 238, 0.96);
+            border-radius: 14px;
+            padding: 10px 12px;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+        }
+        #colorbarBox { display: none; min-width: 72px; }
+        #colorbarBox.visible { display: block; }
+        .colorbar-title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--moss);
+            margin-bottom: 8px;
+        }
+        .colorbar-scale {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .colorbar-gradient-wrap {
+            position: relative;
+            width: 26px;
+            height: 168px;
+        }
+        .colorbar-gradient {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+        }
+        .colorbar-value {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+        }
+        .colorbar-value--center {
+            position: absolute;
+            left: calc(100% + 8px);
+            top: 50%;
+            transform: translateY(-50%);
+            white-space: nowrap;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--brick);
+        }
+        .drone-opacity {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 6px;
+            width: 6rem;
+        }
+        .drone-opacity[hidden] { display: none !important; }
+        .drone-opacity-title {
+            font-size: 0.66rem;
+            font-weight: 700;
+            color: var(--moss);
+            text-align: center;
+            line-height: 1.15;
+        }
+        .drone-opacity-sub {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-align: center;
+        }
+        .drone-opacity-scale {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .drone-opacity-value {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--ink);
+            font-variant-numeric: tabular-nums;
+        }
+        .drone-opacity-slider-wrap {
+            height: 140px;
+            width: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .drone-opacity input[type="range"] {
+            width: 140px;
+            height: 18px;
+            margin: 0;
+            transform: rotate(-90deg);
+            cursor: pointer;
+            accent-color: var(--brick);
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+        }
+        .drone-opacity input[type="range"]::-webkit-slider-runnable-track {
+            height: 7px;
+            border-radius: 999px;
+            background: rgba(74, 93, 63, 0.2);
+        }
+        .drone-opacity input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--brick);
+            border: 2px solid #fff;
+            margin-top: -5px;
+        }
+        @media (max-width: 720px) {
+            .app { flex-direction: column; }
+            .panel { width: 100%; max-height: 44dvh; }
+            .map-stage { min-height: 50dvh; }
+            .legend-rail--right { top: auto; bottom: 56px; transform: none; }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <aside class="panel">
+        <header class="panel-head">
+            <p class="kicker">Anillo MESS · OE2</p>
+            <h1>Salar de Huasco</h1>
+            <p class="sub">Mapa preliminar con vuelo de dron · sitio P7 (H3)</p>
+            <a class="back" href="index.html">← Volver al inicio</a>
+        </header>
+        <div class="panel-body">
+            <div id="loadHint" hidden></div>
+            <div class="block">
+                <label for="globalWetland">Sitio de vuelo</label>
+                <select id="globalWetland"></select>
+                <p class="hint" id="siteHint">Recorte al polígono del sitio.</p>
+            </div>
+            <div class="block">
+                <span class="block-title">Capa espectral</span>
+                <div class="layer-pills" id="layerPills"></div>
+                <p class="hint" id="layerHint">Elige un índice o la foto en color.</p>
+            </div>
+        </div>
+    </aside>
+    <div class="map-stage">
+        <div id="mapa"></div>
+        <div class="legend-rail legend-rail--left">
+            <div class="map-legend-dock" id="colorbarBox">
+                <div class="colorbar-title" id="cbTitle">NDVI</div>
+                <div class="colorbar-scale">
+                    <span class="colorbar-value" id="cbMax"></span>
+                    <div class="colorbar-gradient-wrap">
+                        <div class="colorbar-gradient" id="cbGradient" role="img" aria-hidden="true"></div>
+                        <span class="colorbar-value colorbar-value--center" id="cbCenter" hidden>0</span>
+                    </div>
+                    <span class="colorbar-value" id="cbMin"></span>
+                </div>
+            </div>
+        </div>
+        <div class="legend-rail legend-rail--right">
+            <div class="map-legend-dock drone-opacity" id="droneOpacityWrap" hidden>
+                <div class="drone-opacity-title">Transparencia</div>
+                <div class="drone-opacity-sub">índice sobre RGB</div>
+                <div class="drone-opacity-scale">
+                    <span class="drone-opacity-value" id="opacityValTop">100%</span>
+                    <div class="drone-opacity-slider-wrap">
+                        <input type="range" id="droneOpacity" min="0" max="100" value="100"
+                            aria-label="Transparencia del índice sobre RGB">
+                    </div>
+                    <span class="drone-opacity-value">0%</span>
+                </div>
+            </div>
+        </div>
+        <div class="map-note" id="mapNote">Cargando…</div>
+    </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const BASE = 'data_static';
+const state = {
+    manifest: null,
+    aoi: null,
+    metadata: null,
+    selectedWetland: 'p7',
+    mapLayerKind: 'rgb',
+    mapPeriodKey: null,
+    indexOpacity: 1,
+    fitBoundsOnSiteChange: true,
+};
+let mapa, aoiLayer, rasterOverlay, rgbUnderlay;
+
+const LAYER_ORDER = ['rgb', 'ndvi', 'ndci', 'ndwi', 'lst'];
+const INDEX_LAYERS = ['ndvi', 'ndci', 'ndwi', 'lst'];
+
+function isIndexLayer(kind) {
+    return INDEX_LAYERS.indexOf(String(kind).toLowerCase()) >= 0;
+}
+
+function legendLimits(idxMeta) {
+    if (!idxMeta) return { min: '', max: '', center: null, diverging: false };
+    const vmin = Number(idxMeta.vmin);
+    const vmax = Number(idxMeta.vmax);
+    const diverging = idxMeta.diverging === true;
+    if (!diverging || !isFinite(vmin) || !isFinite(vmax)) {
+        return { min: idxMeta.vmin, max: idxMeta.vmax, center: null, diverging: false };
+    }
+    const lim = Math.max(Math.abs(vmin), Math.abs(vmax));
+    return { min: -lim, max: lim, center: 0, diverging: true };
+}
+
+function resetIndexOpacityToFull() {
+    state.indexOpacity = 1;
+    const slider = document.getElementById('droneOpacity');
+    const label = document.getElementById('opacityValTop');
+    if (slider) slider.value = '100';
+    if (label) label.textContent = '100%';
+}
+
+function initMap() {
+    mapa = L.map('mapa', { center: [-20.30, -68.85], zoom: 14, zoomControl: false, maxZoom: 22 });
+    L.control.zoom({ position: 'topright' }).addTo(mapa);
+    L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(mapa);
+    const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '© Esri', maxZoom: 22, maxNativeZoom: 19,
+    });
+    const topo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '© Esri', maxZoom: 22,
+    });
+    sat.addTo(mapa);
+    L.control.layers({ 'Satélite': sat, 'Topográfico': topo }, {}, { position: 'topright' }).addTo(mapa);
+}
+
+async function fetchJson(url) {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(url);
+    return r.json();
+}
+
+function meta() { return state.metadata || { wetlands: {}, indices: {}, rasters: {}, periods: [] }; }
+
+function findLatestPeriodKey(wid, indexKey) {
+    const keys = [];
+    Object.keys(meta().rasters || {}).forEach(function (rk) {
+        const r = meta().rasters[rk];
+        if (!r) return;
+        if (String(r.wetland_id).toLowerCase() !== String(wid).toLowerCase()) return;
+        if (String(r.index).toLowerCase() !== String(indexKey).toLowerCase()) return;
+        if (r.period_key) keys.push(r.period_key);
+    });
+    if (!keys.length) return null;
+    keys.sort();
+    return keys[keys.length - 1];
+}
+
+function getRaster(wid, periodKey, indexKey) {
+    const rk = wid + '_' + periodKey + '_' + indexKey;
+    return (meta().rasters || {})[rk] || null;
+}
+
+function clearOverlays() {
+    if (rasterOverlay) { mapa.removeLayer(rasterOverlay); rasterOverlay = null; }
+    if (rgbUnderlay) { mapa.removeLayer(rgbUnderlay); rgbUnderlay = null; }
+}
+
+function updateOpacityVisibility() {
+    const wrap = document.getElementById('droneOpacityWrap');
+    if (!wrap) return;
+    wrap.hidden = !isIndexLayer(state.mapLayerKind) || !state.mapPeriodKey;
+}
+
+function buildLayerPills() {
+    const box = document.getElementById('layerPills');
+    const indices = meta().indices || {};
+    box.innerHTML = '';
+    LAYER_ORDER.forEach(function (key) {
+        if (!indices[key]) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'pill' + (state.mapLayerKind === key ? ' active' : '');
+        btn.textContent = indices[key].label || key.toUpperCase();
+        btn.dataset.layer = key;
+        btn.addEventListener('click', function () {
+            state.mapLayerKind = key;
+            document.querySelectorAll('.pill').forEach(function (p) {
+                p.classList.toggle('active', p.dataset.layer === key);
+            });
+            if (state.selectedWetland) {
+                state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, state.mapLayerKind);
+            }
+            if (isIndexLayer(key)) resetIndexOpacityToFull();
+            updateLayerHint();
+            updateOpacityVisibility();
+            updateMapOverlay(false);
+        });
+        box.appendChild(btn);
+    });
+}
+
+function updateLayerHint() {
+    const el = document.getElementById('layerHint');
+    if (!state.mapPeriodKey) {
+        el.textContent = 'Sin imagen para esta capa en el sitio seleccionado.';
+        return;
+    }
+    if (isIndexLayer(state.mapLayerKind)) {
+        el.textContent = 'Ajusta la transparencia para ver la foto RGB debajo.';
+        return;
+    }
+    const p = (meta().periods || []).find(function (x) { return x.key === state.mapPeriodKey; });
+    el.textContent = p ? ('Vuelo · ' + p.label) : 'Ortomosaico a color.';
+}
+
+function buildWetlandSelect() {
+    const sel = document.getElementById('globalWetland');
+    sel.innerHTML = '';
+    const wetlands = meta().wetlands || {};
+    const keys = Object.keys(wetlands);
+    keys.forEach(function (wid) {
+        const info = wetlands[wid] || {};
+        const opt = document.createElement('option');
+        opt.value = wid;
+        opt.textContent = info.name || wid.toUpperCase();
+        sel.appendChild(opt);
+    });
+    const ready = keys.filter(function (w) {
+        const i = wetlands[w] || {};
+        return i.status === 'ready' || (i.n_periods || 0) > 0;
+    });
+    if (ready.indexOf('p7') >= 0) state.selectedWetland = 'p7';
+    else if (ready.indexOf(state.selectedWetland) < 0) {
+        state.selectedWetland = ready[0] || keys[0];
+    }
+    sel.value = state.selectedWetland;
+    sel.onchange = function () {
+        state.selectedWetland = sel.value;
+        state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, state.mapLayerKind);
+        state.fitBoundsOnSiteChange = true;
+        if (isIndexLayer(state.mapLayerKind)) resetIndexOpacityToFull();
+        updateLayerHint();
+        renderAOI();
+        updateOpacityVisibility();
+        updateMapOverlay(true);
+    };
+}
+
+function renderAOI() {
+    if (aoiLayer) { mapa.removeLayer(aoiLayer); aoiLayer = null; }
+    if (!state.aoi || !mapa) return;
+    const idCol = meta().aoi_id_column || 'wetland_id';
+    aoiLayer = L.geoJSON(state.aoi, {
+        style: function (f) {
+            const wid = String(f.properties[idCol] || '').toLowerCase();
+            const active = wid === state.selectedWetland;
+            return {
+                color: active ? '#d97a2e' : '#6b7f5c',
+                weight: active ? 3 : 2,
+                fillOpacity: 0,
+                dashArray: active ? '' : '5 4',
+            };
+        },
+        onEachFeature: function (f, layer) {
+            const wid = String(f.properties[idCol] || '');
+            const info = (meta().wetlands || {})[wid] || {};
+            layer.bindTooltip(info.name || wid, { sticky: true });
+        },
+    }).addTo(mapa);
+}
+
+function boundsValid(b) {
+    if (!b || b.length !== 2) return false;
+    return Math.abs(b[0][0]) <= 90 && Math.abs(b[1][0]) <= 90;
+}
+
+function fitAoi() {
+    if (!state.aoi || !mapa) return;
+    const idCol = meta().aoi_id_column || 'wetland_id';
+    const layer = L.geoJSON(state.aoi, {
+        filter: function (f) {
+            return String(f.properties[idCol] || '').toLowerCase() === state.selectedWetland;
+        },
+    });
+    try { mapa.fitBounds(layer.getBounds(), { padding: [40, 40] }); } catch (e) {}
+}
+
+function updateColorbar(kind) {
+    const cbar = document.getElementById('colorbarBox');
+    const idxMeta = (meta().indices || {})[kind];
+    if (!idxMeta || idxMeta.visual_only) {
+        cbar.classList.remove('visible');
+        return;
+    }
+    const lim = legendLimits(idxMeta);
+    const gradient = idxMeta.legend_gradient || 'linear-gradient(to top, #666, #eee)';
+    document.getElementById('cbGradient').style.background = gradient;
+    document.getElementById('cbTitle').textContent = idxMeta.label || kind.toUpperCase();
+    document.getElementById('cbMax').textContent = lim.max;
+    document.getElementById('cbMin').textContent = lim.min;
+    const centerEl = document.getElementById('cbCenter');
+    if (lim.diverging && lim.center != null) {
+        centerEl.hidden = false;
+        centerEl.textContent = lim.center;
+    } else {
+        centerEl.hidden = true;
+    }
+    cbar.classList.add('visible');
+}
+
+function addImageOverlay(raster, opacity) {
+    const corners = raster.visual.bounds;
+    if (!boundsValid(corners)) return null;
+    const ly = L.imageOverlay(BASE + '/' + raster.visual.path, corners, {
+        opacity: opacity,
+        interactive: false,
+    });
+    ly.addTo(mapa);
+    return ly;
+}
+
+function updateMapOverlay(doFitBounds) {
+    if (!mapa) return;
+    clearOverlays();
+    const note = document.getElementById('mapNote');
+    document.getElementById('colorbarBox').classList.remove('visible');
+    updateOpacityVisibility();
+
+    if (!state.selectedWetland) {
+        note.textContent = 'Selecciona un sitio de vuelo.';
+        return;
+    }
+    if (!state.mapPeriodKey) {
+        const info = (meta().wetlands || {})[state.selectedWetland] || {};
+        note.textContent = (info.n_periods || 0) === 0
+            ? 'Este sitio aún no tiene mapas (por ahora solo P7).'
+            : 'Sin capa para este sitio.';
+        if (doFitBounds || state.fitBoundsOnSiteChange) {
+            fitAoi();
+            state.fitBoundsOnSiteChange = false;
+        }
+        return;
+    }
+
+    const wid = state.selectedWetland;
+    const period = state.mapPeriodKey;
+    const kind = state.mapLayerKind;
+    const raster = getRaster(wid, period, kind);
+
+    if (!raster || !raster.visual) {
+        note.textContent = 'Capa no disponible.';
+        if (doFitBounds || state.fitBoundsOnSiteChange) {
+            fitAoi();
+            state.fitBoundsOnSiteChange = false;
+        }
+        return;
+    }
+
+    let fitBounds = raster.visual.bounds;
+
+    if (isIndexLayer(kind)) {
+        const rgbRaster = getRaster(wid, period, 'rgb');
+        if (rgbRaster && rgbRaster.visual && boundsValid(rgbRaster.visual.bounds)) {
+            rgbUnderlay = addImageOverlay(rgbRaster, 1);
+            fitBounds = rgbRaster.visual.bounds;
+        }
+        const op = state.indexOpacity;
+        rasterOverlay = addImageOverlay(raster, op);
+        updateColorbar(kind);
+        const idxMeta = (meta().indices || {})[kind];
+        note.textContent = (idxMeta && idxMeta.label ? idxMeta.label : kind.toUpperCase()) +
+            ' sobre RGB · transparencia ' + Math.round(op * 100) + '%';
+    } else {
+        rasterOverlay = addImageOverlay(raster, 1);
+        note.textContent = 'Foto a color · ' + (raster.season || '');
+    }
+
+    if (doFitBounds || state.fitBoundsOnSiteChange) {
+        if (boundsValid(fitBounds)) {
+            mapa.fitBounds(fitBounds, { padding: [36, 36] });
+        } else {
+            fitAoi();
+        }
+        state.fitBoundsOnSiteChange = false;
+    }
+}
+
+async function loadAll() {
+    const hint = document.getElementById('loadHint');
+    try {
+        state.manifest = await fetchJson(BASE + '/sources_manifest.json');
+        const src = state.manifest.sources.drone;
+        state.metadata = await fetchJson(BASE + '/' + src.metadata_path);
+        const aoiPath = state.manifest.aoi_path || 'wetlands_aoi.geojson';
+        state.aoi = await fetchJson(BASE + '/' + aoiPath);
+    } catch (e) {
+        hint.hidden = false;
+        hint.textContent = 'No se cargaron los datos. Ejecuta el export y sirve la carpeta con un servidor HTTP.';
+        document.getElementById('mapNote').textContent = 'Datos no disponibles';
+        return;
+    }
+    hint.hidden = true;
+    buildWetlandSelect();
+    buildLayerPills();
+    state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, state.mapLayerKind);
+    if (!state.mapPeriodKey && LAYER_ORDER.indexOf('rgb') >= 0) {
+        state.mapLayerKind = 'rgb';
+        state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, 'rgb');
+        buildLayerPills();
+    }
+    updateLayerHint();
+    updateOpacityVisibility();
+    renderAOI();
+    state.fitBoundsOnSiteChange = true;
+    updateMapOverlay(true);
+}
+
+window.addEventListener('load', function () {
+    initMap();
+    document.getElementById('droneOpacity').addEventListener('input', function (e) {
+        state.indexOpacity = Number(e.target.value) / 100;
+        document.getElementById('opacityValTop').textContent = e.target.value + '%';
+        if (isIndexLayer(state.mapLayerKind)) updateMapOverlay(false);
+    });
+    loadAll();
+    setTimeout(function () { if (mapa) mapa.invalidateSize(); }, 300);
+});
+</script>
+</body>
+</html>

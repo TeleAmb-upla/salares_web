@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-06-03T02:28:48+00:00",
+  "aoi_path": "wetlands_aoi.geojson",
+  "year_range": {
+    "start": 2026,
+    "end": 2026
+  },
+  "sources": {
+    "drone": {
+      "id": "drone",
+      "label": "Dron multiespectral",
+      "description": "Ortofotos e índices del vuelo en sitio P7 (H3).",
+      "color": "#c45c26",
+      "has_data": true,
+      "timeseries_path": "drone/timeseries.json",
+      "metadata_path": "drone/metadata.json",
+      "csv_dir": "drone/csv",
+      "status": "ready",
+      "summary": {
+        "n_wetlands": 7,
+        "n_periods": 1,
+        "data_points": 0,
+        "raster_count": 5,
+        "total_area_ha": 204.1,
+        "latest_period": "Vuelo 29 Jan 2026",
+        "available_years": [
+          2026
+        ]
+      }
+    }
+  }
+}

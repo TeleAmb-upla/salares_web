@@ -1,0 +1,360 @@
+{
+  "generated_at": "2026-06-03T02:32:31+00:00",
+  "aoi_id_column": "wetland_id",
+  "source": {
+    "id": "drone",
+    "label": "Dron multiespectral",
+    "description": "Ortofotos e índices del vuelo en sitio P7 (H3).",
+    "color": "#c45c26",
+    "has_data": true
+  },
+  "indices": {
+    "ndvi": {
+      "label": "NDVI",
+      "description": "Vigor de vegetación / biomasa",
+      "visual_only": false,
+      "vmin": -0.8,
+      "vmax": 0.8,
+      "colormap": "YlGn",
+      "legend_gradient": "linear-gradient(to top, rgb(255,255,204) 0.0%, rgb(217,239,181) 14.3%, rgb(173,221,142) 28.6%, rgb(120,198,121) 42.9%, rgb(65,171,93) 57.1%, rgb(35,139,69) 71.4%, rgb(0,109,44) 85.7%, rgb(0,68,27) 100.0%)",
+      "diverging": true
+    },
+    "ndci": {
+      "label": "NDCI",
+      "description": "Clorofila y pigmentos",
+      "visual_only": false,
+      "vmin": -0.5,
+      "vmax": 0.5,
+      "colormap": "viridis",
+      "legend_gradient": "linear-gradient(to top, rgb(68,1,84) 0.0%, rgb(72,40,120) 11.1%, rgb(62,74,137) 22.2%, rgb(49,104,142) 33.3%, rgb(38,130,142) 44.4%, rgb(31,158,137) 55.6%, rgb(53,183,121) 66.7%, rgb(109,205,89) 77.8%, rgb(180,222,44) 88.9%, rgb(253,231,37) 100.0%)",
+      "diverging": true
+    },
+    "ndwi": {
+      "label": "NDWI",
+      "description": "Agua superficial",
+      "visual_only": false,
+      "vmin": -0.4,
+      "vmax": 0.4,
+      "colormap": "BrBG",
+      "legend_gradient": "linear-gradient(to top, rgb(166,97,26) 0.0%, rgb(223,194,125) 14.3%, rgb(255,255,191) 28.6%, rgb(199,234,229) 42.9%, rgb(128,205,193) 57.1%, rgb(53,151,143) 71.4%, rgb(1,102,94) 85.7%, rgb(0,60,48) 100.0%)",
+      "diverging": true
+    },
+    "lst": {
+      "label": "LST",
+      "description": "Temperatura superficial (°C)",
+      "visual_only": false,
+      "vmin": 10,
+      "vmax": 24,
+      "colormap": "inferno",
+      "legend_gradient": "linear-gradient(to top, rgb(0,0,4) 0.0%, rgb(31,12,72) 12.5%, rgb(85,15,109) 25.0%, rgb(136,34,106) 37.5%, rgb(186,54,85) 50.0%, rgb(227,89,51) 62.5%, rgb(249,140,10) 75.0%, rgb(249,201,50) 87.5%, rgb(252,255,164) 100.0%)",
+      "diverging": false
+    },
+    "rgb": {
+      "label": "RGB",
+      "description": "Ortomosaico color verdadero",
+      "visual_only": true
+    }
+  },
+  "wetlands": {
+    "p1": {
+      "name": "Sitio P1",
+      "area_ha": 50.0,
+      "center": [
+        -20.2745,
+        -68.8349
+      ],
+      "n_periods": 0,
+      "last_period": null,
+      "available_years": [],
+      "status": "empty"
+    },
+    "p2": {
+      "name": "Sitio P2",
+      "area_ha": 36.7,
+      "center": [
+        -20.3129,
+        -68.8041
+      ],
+      "n_periods": 0,
+      "last_period": null,
+      "available_years": [],
+      "status": "empty"
+    },
+    "p3": {
+      "name": "Sitio P3",
+      "area_ha": 15.9,
+      "center": [
+        -20.2928,
+        -68.8027
+      ],
+      "n_periods": 0,
+      "last_period": null,
+      "available_years": [],
+      "status": "empty"
+    },
+    "p4": {
+      "name": "Sitio P4",
+      "area_ha": 24.9,
+      "center": [
+        -20.3301,
+        -68.8372
+      ],
+      "n_periods": 0,
+      "last_period": null,
+      "available_years": [],
+      "status": "empty"
+    },
+    "p5": {
+      "name": "Sitio P5",
+      "area_ha": 30.7,
+      "center": [
+        -20.327,
+        -68.8554
+      ],
+      "n_periods": 0,
+      "last_period": null,
+      "available_years": [],
+      "status": "empty"
+    },
+    "p6": {
+      "name": "Sitio P6",
+      "area_ha": 24.9,
+      "center": [
+        -20.2929,
+        -68.8899
+      ],
+      "n_periods": 0,
+      "last_period": null,
+      "available_years": [],
+      "status": "empty"
+    },
+    "p7": {
+      "name": "Sitio P7 (H3)",
+      "area_ha": 21.0,
+      "center": [
+        -20.2833,
+        -68.8888
+      ],
+      "n_periods": 1,
+      "last_period": "29 Jan 2026",
+      "available_years": [
+        2026
+      ],
+      "status": "ready"
+    }
+  },
+  "rasters": {
+    "p7_20260129_lst": {
+      "source": "drone",
+      "wetland_id": "p7",
+      "index": "lst",
+      "year": 2026,
+      "season": "29 Jan 2026",
+      "period_key": "20260129",
+      "visual": {
+        "path": "drone/rasters/P7_20260129_lst.webp",
+        "bounds": [
+          [
+            -20.28597997727486,
+            -68.89094481911847
+          ],
+          [
+            -20.28055766732756,
+            -68.88662882630197
+          ]
+        ],
+        "format": "WEBP",
+        "native_size": [
+          18388,
+          24493
+        ],
+        "display_size": [
+          4613,
+          6144
+        ],
+        "render_mode": "smooth",
+        "opacity": 0.92
+      },
+      "analytic_path": "data/drone/P7_20260129_lst.tif",
+      "source_fingerprint": {
+        "path": "data/drone/P7_20260129_lst.tif",
+        "size": 733733120,
+        "mtime_ns": 1780451289118571000
+      },
+      "export_signature": "{\"colormap\": \"inferno\", \"index\": \"lst\", \"mode\": \"analytic_preview_flat\", \"preview_geom_sha\": \"81898c4d9f17e659dfb6ccc6a840ca24\", \"visualization\": {\"clip_aoi_buffer_m\": 0, \"clip_to_aoi\": true, \"index_preview_max_size\": 6144, \"opacity\": 0.92, \"overwrite_preview_file\": true, \"pause_between_drone_tiffs_sec\": 0, \"preserve_pixels\": true, \"preview_format\": \"WEBP\", \"reuse_exported_webp_if_unchanged\": false, \"rgb_border_black_frac_of_max\": 0.02, \"rgb_border_near_gray_mean_min_uint8\": 226, \"rgb_border_near_gray_spread_uint8\": 42, \"rgb_border_white_frac_of_max\": 0.982, \"rgb_context_buffer_m\": 0, \"rgb_hide_white_black_borders\": true, \"rgb_leaflet_opacity\": 1.0, \"rgb_max_size\": 6144, \"rgb_quantize_colors\": 128, \"rgb_stretch_percentiles\": [2, 98], \"rgb_upscale_factor\": 1, \"rgb_use_source_alpha_band\": false, \"rgb_webp_quality\": 94, \"upscale_factor\": 1, \"webp_quality_analytic\": 96}, \"vmax\": 24, \"vmin\": 10}"
+    },
+    "p7_20260129_ndci": {
+      "source": "drone",
+      "wetland_id": "p7",
+      "index": "ndci",
+      "year": 2026,
+      "season": "29 Jan 2026",
+      "period_key": "20260129",
+      "visual": {
+        "path": "drone/rasters/P7_20260129_ndci.webp",
+        "bounds": [
+          [
+            -20.28597997727486,
+            -68.89094481911847
+          ],
+          [
+            -20.28055766732756,
+            -68.88662882630197
+          ]
+        ],
+        "format": "WEBP",
+        "native_size": [
+          18388,
+          24493
+        ],
+        "display_size": [
+          4613,
+          6144
+        ],
+        "render_mode": "smooth",
+        "opacity": 0.92
+      },
+      "analytic_path": "data/drone/P7_20260129_ndci.tif",
+      "source_fingerprint": {
+        "path": "data/drone/P7_20260129_ndci.tif",
+        "size": 1165171950,
+        "mtime_ns": 1780451055402531300
+      },
+      "export_signature": "{\"colormap\": \"viridis\", \"index\": \"ndci\", \"mode\": \"analytic_preview_flat\", \"preview_geom_sha\": \"81898c4d9f17e659dfb6ccc6a840ca24\", \"visualization\": {\"clip_aoi_buffer_m\": 0, \"clip_to_aoi\": true, \"index_preview_max_size\": 6144, \"opacity\": 0.92, \"overwrite_preview_file\": true, \"pause_between_drone_tiffs_sec\": 0, \"preserve_pixels\": true, \"preview_format\": \"WEBP\", \"reuse_exported_webp_if_unchanged\": false, \"rgb_border_black_frac_of_max\": 0.02, \"rgb_border_near_gray_mean_min_uint8\": 226, \"rgb_border_near_gray_spread_uint8\": 42, \"rgb_border_white_frac_of_max\": 0.982, \"rgb_context_buffer_m\": 0, \"rgb_hide_white_black_borders\": true, \"rgb_leaflet_opacity\": 1.0, \"rgb_max_size\": 6144, \"rgb_quantize_colors\": 128, \"rgb_stretch_percentiles\": [2, 98], \"rgb_upscale_factor\": 1, \"rgb_use_source_alpha_band\": false, \"rgb_webp_quality\": 94, \"upscale_factor\": 1, \"webp_quality_analytic\": 96}, \"vmax\": 0.5, \"vmin\": -0.5}"
+    },
+    "p7_20260129_ndvi": {
+      "source": "drone",
+      "wetland_id": "p7",
+      "index": "ndvi",
+      "year": 2026,
+      "season": "29 Jan 2026",
+      "period_key": "20260129",
+      "visual": {
+        "path": "drone/rasters/P7_20260129_ndvi.webp",
+        "bounds": [
+          [
+            -20.28597997727486,
+            -68.89094481911847
+          ],
+          [
+            -20.28055766732756,
+            -68.88662882630197
+          ]
+        ],
+        "format": "WEBP",
+        "native_size": [
+          18388,
+          24493
+        ],
+        "display_size": [
+          4613,
+          6144
+        ],
+        "render_mode": "smooth",
+        "opacity": 0.92
+      },
+      "analytic_path": "data/drone/P7_20260129_ndvi.tif",
+      "source_fingerprint": {
+        "path": "data/drone/P7_20260129_ndvi.tif",
+        "size": 1188199810,
+        "mtime_ns": 1780450979688488500
+      },
+      "export_signature": "{\"colormap\": \"YlGn\", \"index\": \"ndvi\", \"mode\": \"analytic_preview_flat\", \"preview_geom_sha\": \"81898c4d9f17e659dfb6ccc6a840ca24\", \"visualization\": {\"clip_aoi_buffer_m\": 0, \"clip_to_aoi\": true, \"index_preview_max_size\": 6144, \"opacity\": 0.92, \"overwrite_preview_file\": true, \"pause_between_drone_tiffs_sec\": 0, \"preserve_pixels\": true, \"preview_format\": \"WEBP\", \"reuse_exported_webp_if_unchanged\": false, \"rgb_border_black_frac_of_max\": 0.02, \"rgb_border_near_gray_mean_min_uint8\": 226, \"rgb_border_near_gray_spread_uint8\": 42, \"rgb_border_white_frac_of_max\": 0.982, \"rgb_context_buffer_m\": 0, \"rgb_hide_white_black_borders\": true, \"rgb_leaflet_opacity\": 1.0, \"rgb_max_size\": 6144, \"rgb_quantize_colors\": 128, \"rgb_stretch_percentiles\": [2, 98], \"rgb_upscale_factor\": 1, \"rgb_use_source_alpha_band\": false, \"rgb_webp_quality\": 94, \"upscale_factor\": 1, \"webp_quality_analytic\": 96}, \"vmax\": 0.8, \"vmin\": -0.8}"
+    },
+    "p7_20260129_ndwi": {
+      "source": "drone",
+      "wetland_id": "p7",
+      "index": "ndwi",
+      "year": 2026,
+      "season": "29 Jan 2026",
+      "period_key": "20260129",
+      "visual": {
+        "path": "drone/rasters/P7_20260129_ndwi.webp",
+        "bounds": [
+          [
+            -20.28597997727486,
+            -68.89094481911847
+          ],
+          [
+            -20.28055766732756,
+            -68.88662882630197
+          ]
+        ],
+        "format": "WEBP",
+        "native_size": [
+          18388,
+          24493
+        ],
+        "display_size": [
+          4613,
+          6144
+        ],
+        "render_mode": "smooth",
+        "opacity": 0.92
+      },
+      "analytic_path": "data/drone/P7_20260129_ndwi.tif",
+      "source_fingerprint": {
+        "path": "data/drone/P7_20260129_ndwi.tif",
+        "size": 1233801147,
+        "mtime_ns": 1780451113904426400
+      },
+      "export_signature": "{\"colormap\": \"BrBG\", \"index\": \"ndwi\", \"mode\": \"analytic_preview_flat\", \"preview_geom_sha\": \"81898c4d9f17e659dfb6ccc6a840ca24\", \"visualization\": {\"clip_aoi_buffer_m\": 0, \"clip_to_aoi\": true, \"index_preview_max_size\": 6144, \"opacity\": 0.92, \"overwrite_preview_file\": true, \"pause_between_drone_tiffs_sec\": 0, \"preserve_pixels\": true, \"preview_format\": \"WEBP\", \"reuse_exported_webp_if_unchanged\": false, \"rgb_border_black_frac_of_max\": 0.02, \"rgb_border_near_gray_mean_min_uint8\": 226, \"rgb_border_near_gray_spread_uint8\": 42, \"rgb_border_white_frac_of_max\": 0.982, \"rgb_context_buffer_m\": 0, \"rgb_hide_white_black_borders\": true, \"rgb_leaflet_opacity\": 1.0, \"rgb_max_size\": 6144, \"rgb_quantize_colors\": 128, \"rgb_stretch_percentiles\": [2, 98], \"rgb_upscale_factor\": 1, \"rgb_use_source_alpha_band\": false, \"rgb_webp_quality\": 94, \"upscale_factor\": 1, \"webp_quality_analytic\": 96}, \"vmax\": 0.4, \"vmin\": -0.4}"
+    },
+    "p7_20260129_rgb": {
+      "source": "drone",
+      "wetland_id": "p7",
+      "index": "rgb",
+      "year": 2026,
+      "season": "29 Jan 2026",
+      "period_key": "20260129",
+      "visual": {
+        "path": "drone/rasters/P7_20260129_rgb.webp",
+        "bounds": [
+          [
+            -20.28597997727486,
+            -68.89094481911847
+          ],
+          [
+            -20.28055766732756,
+            -68.88662882630197
+          ]
+        ],
+        "format": "WEBP",
+        "native_size": [
+          18388,
+          24493
+        ],
+        "display_size": [
+          4613,
+          6144
+        ],
+        "render_mode": "smooth",
+        "opacity": 1.0
+      },
+      "analytic_path": "data/drone/P7_20260129_rgb.tif",
+      "source_fingerprint": {
+        "path": "data/drone/P7_20260129_rgb.tif",
+        "size": 1689551333,
+        "mtime_ns": 1780450906065237400
+      },
+      "export_signature": "{\"buffer_m\": 0.0, \"index\": \"rgb\", \"mode\": \"rgb_visual_flat\", \"preview_geom_sha\": \"81898c4d9f17e659dfb6ccc6a840ca24\", \"rgb_preview_mask_revision\": 3, \"visualization\": {\"clip_aoi_buffer_m\": 0, \"clip_to_aoi\": true, \"index_preview_max_size\": 6144, \"opacity\": 0.92, \"overwrite_preview_file\": true, \"pause_between_drone_tiffs_sec\": 0, \"preserve_pixels\": true, \"preview_format\": \"WEBP\", \"reuse_exported_webp_if_unchanged\": false, \"rgb_border_black_frac_of_max\": 0.02, \"rgb_border_near_gray_mean_min_uint8\": 226, \"rgb_border_near_gray_spread_uint8\": 42, \"rgb_border_white_frac_of_max\": 0.982, \"rgb_context_buffer_m\": 0, \"rgb_hide_white_black_borders\": true, \"rgb_leaflet_opacity\": 1.0, \"rgb_max_size\": 6144, \"rgb_quantize_colors\": 128, \"rgb_stretch_percentiles\": [2, 98], \"rgb_upscale_factor\": 1, \"rgb_use_source_alpha_band\": false, \"rgb_webp_quality\": 94, \"upscale_factor\": 1, \"webp_quality_analytic\": 96}}"
+    }
+  },
+  "periods": [
+    {
+      "key": "20260129",
+      "label": "Vuelo 29 Jan 2026"
+    }
+  ],
+  "summary": {
+    "n_wetlands": 7,
+    "n_periods": 1,
+    "data_points": 0,
+    "raster_count": 5,
+    "total_area_ha": 204.1,
+    "latest_period": "Vuelo 29 Jan 2026",
+    "available_years": [
+      2026
+    ]
+  }
+}

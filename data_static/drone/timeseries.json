@@ -1,0 +1,395 @@
+{
+  "source": {
+    "id": "drone",
+    "label": "Dron multiespectral",
+    "description": "Ortofotos e índices del vuelo en sitio P7 (H3).",
+    "has_data": true
+  },
+  "wetlands": {
+    "p1": {
+      "name": "Sitio P1",
+      "indices": {
+        "rgb": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndvi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndci": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndwi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "lst": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        }
+      }
+    },
+    "p2": {
+      "name": "Sitio P2",
+      "indices": {
+        "rgb": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndvi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndci": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndwi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "lst": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        }
+      }
+    },
+    "p3": {
+      "name": "Sitio P3",
+      "indices": {
+        "rgb": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndvi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndci": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndwi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "lst": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        }
+      }
+    },
+    "p4": {
+      "name": "Sitio P4",
+      "indices": {
+        "rgb": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndvi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndci": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndwi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "lst": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        }
+      }
+    },
+    "p5": {
+      "name": "Sitio P5",
+      "indices": {
+        "rgb": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndvi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndci": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndwi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "lst": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        }
+      }
+    },
+    "p6": {
+      "name": "Sitio P6",
+      "indices": {
+        "rgb": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndvi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndci": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndwi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "lst": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        }
+      }
+    },
+    "p7": {
+      "name": "Sitio P7 (H3)",
+      "indices": {
+        "rgb": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndvi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndci": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "ndwi": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        },
+        "lst": {
+          "points": [],
+          "metrics": {
+            "latest": null,
+            "historical_mean": null,
+            "seasonal_means": {},
+            "annual_summary": [],
+            "trend": null
+          }
+        }
+      }
+    }
+  }
+}

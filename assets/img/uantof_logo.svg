@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 56" role="img" aria-label="Universidad de Antofagasta">
+  <rect width="200" height="56" rx="8" fill="#1a3d5c"/>
+  <text x="100" y="24" text-anchor="middle" font-family="system-ui,sans-serif" font-size="11" font-weight="700" fill="#8ecae6" letter-spacing=".12em">UNIVERSIDAD DE</text>
+  <text x="100" y="44" text-anchor="middle" font-family="Georgia,serif" font-size="18" font-weight="700" fill="#ffffff">ANTOFAGASTA</text>
+</svg>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salar de Huasco · Anillo MESS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --moss: #4a5d3f;
+            --moss-light: #6b7f5c;
+            --brick: #b54a32;
+            --brick-deep: #8f3828;
+            --orange: #d97a2e;
+            --pale: #f5e6b8;
+            --sand: #faf6ee;
+            --ink: #2a2620;
+            --muted: #5c564c;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            min-height: 100dvh;
+            font-family: 'DM Sans', system-ui, sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(ellipse 90% 60% at 10% 0%, rgba(217, 122, 46, 0.14), transparent 55%),
+                radial-gradient(ellipse 70% 50% at 95% 20%, rgba(74, 93, 63, 0.12), transparent 50%),
+                linear-gradient(168deg, var(--sand) 0%, #efe6d4 42%, #e8dcc8 100%);
+            line-height: 1.65;
+        }
+        .page {
+            max-width: 920px;
+            margin: 0 auto;
+            padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 4vw, 2.5rem) 3rem;
+        }
+        .logos {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(1rem, 3vw, 2rem);
+            padding: 1.25rem 1rem;
+            margin-bottom: 2rem;
+            background: rgba(255, 255, 255, 0.55);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            box-shadow: 0 12px 40px rgba(42, 38, 32, 0.06);
+        }
+        .logos a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.35rem 0.5rem;
+            border-radius: 12px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .logos a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(42, 38, 32, 0.1);
+        }
+        .logos img {
+            display: block;
+            height: clamp(40px, 8vw, 52px);
+            width: auto;
+            max-width: 160px;
+            object-fit: contain;
+        }
+        .logos img.logo-ua { height: clamp(36px, 7vw, 48px); max-width: 140px; }
+        .hero {
+            text-align: center;
+            margin-bottom: 2.25rem;
+        }
+        .kicker {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--moss);
+            background: rgba(74, 93, 63, 0.12);
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            margin-bottom: 1rem;
+        }
+        h1 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: clamp(2.1rem, 5.5vw, 3rem);
+            font-weight: 600;
+            line-height: 1.12;
+            color: var(--brick-deep);
+            margin-bottom: 0.65rem;
+        }
+        .subtitle {
+            font-size: clamp(1.05rem, 2.5vw, 1.2rem);
+            color: var(--muted);
+            max-width: 36em;
+            margin: 0 auto;
+        }
+        .content {
+            display: grid;
+            gap: 1.35rem;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.92);
+            border-radius: 22px;
+            padding: 1.5rem 1.65rem;
+            box-shadow: 0 10px 36px rgba(42, 38, 32, 0.06);
+        }
+        .card h2 {
+            font-family: 'Fraunces', Georgia, serif;
+            font-size: 1.28rem;
+            font-weight: 600;
+            color: var(--moss);
+            margin-bottom: 0.65rem;
+        }
+        .card p {
+            font-size: 1.02rem;
+            color: var(--muted);
+            margin-bottom: 0.85rem;
+        }
+        .card p:last-child { margin-bottom: 0; }
+        .oe-tag {
+            display: inline-block;
+            margin-top: 0.5rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(181, 74, 50, 0.12), rgba(245, 230, 184, 0.5));
+            border-left: 3px solid var(--brick);
+            font-size: 0.88rem;
+            color: var(--ink);
+        }
+        .actions {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.95rem 1.75rem;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--brick), var(--orange));
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-decoration: none;
+            box-shadow: 0 10px 32px rgba(181, 74, 50, 0.35);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 36px rgba(181, 74, 50, 0.42);
+        }
+        .note {
+            margin-top: 1rem;
+            font-size: 0.82rem;
+            color: var(--muted);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <nav class="logos" aria-label="Instituciones participantes">
+            <a href="https://www.uantof.cl/" target="_blank" rel="noopener noreferrer" title="Universidad de Antofagasta">
+                <img class="logo-ua" src="assets/img/uantof_logo.svg" alt="Universidad de Antofagasta">
+            </a>
+            <a href="https://www.upla.cl/" target="_blank" rel="noopener noreferrer" title="Universidad de Playa Ancha">
+                <img src="assets/img/upla_logo.png" alt="Universidad de Playa Ancha">
+            </a>
+            <a href="https://hubambientalupla.cl/" target="_blank" rel="noopener noreferrer" title="HUB Ambiental UPLA">
+                <img src="assets/img/hub_logo.png" alt="HUB Ambiental Universidad de Playa Ancha">
+            </a>
+            <a href="http://www.teleamb.cl/" target="_blank" rel="noopener noreferrer" title="Laboratorio TeleAmb">
+                <img src="assets/img/teleamb_logo.png" alt="Laboratorio TeleAmb">
+            </a>
+        </nav>
+
+        <header class="hero">
+            <p class="kicker">Proyecto Anillo MESS · Resultados preliminares</p>
+            <h1>El Salar de Huasco visto desde el cielo</h1>
+            <p class="subtitle">
+                Una ventana abierta al trabajo del Anillo de Salares: mapas de alta resolución
+                para conocer mejor un humedal altoandino único.
+            </p>
+        </header>
+
+        <div class="content">
+            <section class="card">
+                <h2>¿De qué se trata el Anillo MESS?</h2>
+                <p>
+                    El proyecto <strong>MESS</strong> (<em>Microbial Ecosystem Services of Salares</em>)
+                    reúne a equipos de varias universidades para estudiar los <strong>servicios ecosistémicos
+                    microbianos</strong> en los salares del norte de Chile: su diversidad, su papel en los
+                    ciclos de nutrientes y gases de efecto invernadero, y su valor para la sociedad.
+                </p>
+                <p>
+                    Esta página es una <strong>base preliminar de difusión</strong>: un primer acercamiento
+                    visual al Salar de Huasco dentro del sitio web del Anillo MESS, pensado para
+                    compartir resultados con comunidad, estudiantes y equipos colaboradores.
+                </p>
+            </section>
+
+            <section class="card">
+                <h2>Objetivo específico 2 y este mapa</h2>
+                <p>
+                    Dentro del anillo, el <strong>objetivo específico 2</strong> aborda los
+                    <strong>ciclos biogeoquímicos y el cambio climático</strong>: comprender cómo las
+                    comunidades microbianas participan en el intercambio de gases y en la dinámica del
+                    salar, desde la escala del suelo hasta paisajes enteros.
+                </p>
+                <p>
+                    Aquí mostramos un avance con <strong>vuelos de dron</strong> en el sitio
+                    <strong>P7 (H3)</strong>: fotografías en color verdadero e imágenes que resaltan
+                    vegetación, agua, pigmentos y temperatura de la superficie — una mirada mucho más
+                    detallada que la de los satélites habituales.
+                </p>
+                <p class="oe-tag">
+                    OE2 · Ciclos biogeoquímicos y cambio climático · Salar de Huasco
+                </p>
+            </section>
+
+            <section class="card">
+                <h2>Qué puedes explorar</h2>
+                <p>
+                    En el mapa interactivo puedes recorrer el polígono del vuelo, cambiar entre
+                    <strong>color natural (RGB)</strong>, <strong>índice de vegetación (NDVI)</strong>,
+                    <strong>clorofila (NDCI)</strong>, <strong>agua superficial (NDWI)</strong> y
+                    <strong>temperatura (LST)</strong>, y ajustar la transparencia para comparar
+                    capas sobre la foto base.
+                </p>
+                <p>
+                    Es un resultado en construcción: pronto sumaremos el resto de los sitios de vuelo
+                    (P1–P6) cuando estén listos los datos georreferenciados.
+                </p>
+            </section>
+        </div>
+
+        <div class="actions">
+            <a class="cta" href="explorador.html">Entrar al mapa interactivo</a>
+            <p class="note">Abre el sitio con un servidor local en la carpeta del proyecto (por ejemplo <code>python -m http.server 8090</code>).</p>
+        </div>
+    </div>
+</body>
+</html>
