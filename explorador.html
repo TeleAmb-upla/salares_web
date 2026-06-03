@@ -164,6 +164,29 @@
             line-height: 1.45;
             margin-top: 0.4rem;
         }
+        .index-desc {
+            margin-top: 0.7rem;
+            padding: 0.8rem 0.9rem 0.85rem;
+            border-radius: 14px;
+            background: linear-gradient(145deg, rgba(245, 230, 184, 0.42) 0%, rgba(255, 255, 255, 0.72) 55%, rgba(255, 255, 255, 0.5) 100%);
+            border: 1px solid rgba(181, 74, 50, 0.14);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+        }
+        .index-desc__label {
+            display: block;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--brick-deep);
+            line-height: 1.2;
+        }
+        .index-desc__text {
+            margin-top: 0.4rem;
+            font-size: 0.84rem;
+            line-height: 1.5;
+            color: var(--muted);
+        }
         #loadHint {
             padding: 0.65rem 0.85rem;
             border-radius: 12px;
@@ -379,7 +402,11 @@
                 <div class="block">
                     <span class="block-title">Capa espectral</span>
                     <div class="layer-pills" id="layerPills"></div>
-                    <p class="hint" id="layerHint">Elige un índice o la foto en color.</p>
+                    <div class="index-desc" id="indexDesc" aria-live="polite">
+                        <span class="index-desc__label" id="indexDescLabel">Capa</span>
+                        <p class="index-desc__text" id="indexDescText">Selecciona una capa para ver su descripción.</p>
+                    </div>
+                    <p class="hint" id="layerHint"></p>
                 </div>
             </div>
         </aside>
@@ -402,6 +429,13 @@ let mapa, aoiLayer, rasterOverlay, rgbUnderlay;
 
 const LAYER_ORDER = ['rgb', 'ndvi', 'ndci', 'ndwi', 'lst'];
 const INDEX_LAYERS = ['ndvi', 'ndci', 'ndwi', 'lst'];
+const INDEX_DESC_FALLBACK = {
+    rgb: 'Ortomosaico en color verdadero del vuelo de dron. Sirve de referencia visual para comparar con los índices espectrales.',
+    ndvi: 'Índice de vegetación normalizado: resalta vigor y cobertura verde frente a suelo desnudo o salares.',
+    ndci: 'Índice de contenido de clorofila: sensible a pigmentos y estrés fisiológico de la vegetación.',
+    ndwi: 'Índice de agua en superficie: ayuda a distinguir cuerpos o zonas húmedas frente a áreas secas.',
+    lst: 'Temperatura superficial estimada en °C a partir del sensor térmico del dron.',
+};
 
 function isIndexLayer(kind) {
     return INDEX_LAYERS.indexOf(String(kind).toLowerCase()) >= 0;
@@ -505,6 +539,7 @@ function buildLayerPills() {
                 state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, state.mapLayerKind);
             }
             if (isIndexLayer(key)) resetIndexOpacityToFull();
+            updateIndexDescription();
             updateLayerHint();
             updateOpacityVisibility();
             updateMapOverlay(false);
@@ -513,18 +548,32 @@ function buildLayerPills() {
     });
 }
 
+function updateIndexDescription() {
+    const labelEl = document.getElementById('indexDescLabel');
+    const textEl = document.getElementById('indexDescText');
+    if (!labelEl || !textEl) return;
+    const kind = String(state.mapLayerKind || '').toLowerCase();
+    const info = (meta().indices || {})[kind] || {};
+    labelEl.textContent = info.label || kind.toUpperCase();
+    textEl.textContent = info.description || INDEX_DESC_FALLBACK[kind] || 'Capa espectral del vuelo de dron.';
+}
+
 function updateLayerHint() {
     const el = document.getElementById('layerHint');
+    if (!el) return;
     if (!state.mapPeriodKey) {
         el.textContent = 'Sin imagen para esta capa en el sitio seleccionado.';
+        el.hidden = false;
         return;
     }
     if (isIndexLayer(state.mapLayerKind)) {
         el.textContent = 'Ajusta la transparencia para ver la foto RGB debajo.';
+        el.hidden = false;
         return;
     }
     const p = (meta().periods || []).find(function (x) { return x.key === state.mapPeriodKey; });
-    el.textContent = p ? ('Vuelo · ' + p.label) : 'Ortomosaico a color.';
+    el.textContent = p ? ('Vuelo · ' + p.label) : '';
+    el.hidden = !el.textContent;
 }
 
 function buildWetlandSelect() {
@@ -553,6 +602,7 @@ function buildWetlandSelect() {
         state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, state.mapLayerKind);
         state.fitBoundsOnSiteChange = true;
         if (isIndexLayer(state.mapLayerKind)) resetIndexOpacityToFull();
+        updateIndexDescription();
         updateLayerHint();
         renderAOI();
         updateOpacityVisibility();
@@ -722,6 +772,7 @@ async function loadAll() {
         state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, 'rgb');
         buildLayerPills();
     }
+    updateIndexDescription();
     updateLayerHint();
     updateOpacityVisibility();
     renderAOI();
