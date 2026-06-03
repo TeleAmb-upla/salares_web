@@ -183,8 +183,8 @@
         }
         .index-desc__text {
             margin-top: 0.4rem;
-            font-size: 0.84rem;
-            line-height: 1.5;
+            font-size: 0.81rem;
+            line-height: 1.55;
             color: var(--muted);
         }
         #loadHint {
@@ -430,11 +430,11 @@ let mapa, aoiLayer, rasterOverlay, rgbUnderlay;
 const LAYER_ORDER = ['rgb', 'ndvi', 'ndci', 'ndwi', 'lst'];
 const INDEX_LAYERS = ['ndvi', 'ndci', 'ndwi', 'lst'];
 const INDEX_DESC_FALLBACK = {
-    rgb: 'Ortomosaico en color verdadero del vuelo de dron. Sirve de referencia visual para comparar con los índices espectrales.',
-    ndvi: 'Índice de vegetación normalizado: resalta vigor y cobertura verde frente a suelo desnudo o salares.',
-    ndci: 'Índice de contenido de clorofila: sensible a pigmentos y estrés fisiológico de la vegetación.',
-    ndwi: 'Índice de agua en superficie: ayuda a distinguir cuerpos o zonas húmedas frente a áreas secas.',
-    lst: 'Temperatura superficial estimada en °C a partir del sensor térmico del dron.',
+    rgb: 'La ortomosaico en color verdadero (RGB) es la fotografía de alta resolución del vuelo de dron, como la veríamos a ojo humano desde el aire. Sirve de referencia para orientarse en el terreno y comparar con los índices espectrales.',
+    ndvi: 'El NDVI indica qué tan activa y cubierta de vegetación está una zona. Valores altos (verdes) se asocian a mayor vigor; valores bajos (rojos) a suelo desnudo, salares o estrés. En el Salar de Huasco ayuda a distinguir biomasa frente a fondos salinos.',
+    ndci: 'El NDCI está ligado a la clorofila y pigmentos en vegetación y comunidades algales. Permite detectar zonas con mayor actividad fotosintética o cambios fisiológicos en el humedal.',
+    ndwi: 'El NDWI resalta agua libre o superficies muy húmedas frente a suelos secos y costras salinas. Complementa la foto en color cuando el agua es difícil de ver.',
+    lst: 'La temperatura de superficie (LST) muestra contrastes térmicos entre agua, suelo, vegetación y costras, en grados Celsius estimados desde el sensor térmico del dron.',
 };
 
 function isIndexLayer(kind) {

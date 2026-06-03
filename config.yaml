@@ -80,35 +80,35 @@ raster_visualization:
 indices:
   ndvi:
     label: "NDVI"
-    description: "Vigor de vegetación / biomasa"
-    colormap: "YlGn"
+    description: "El Índice de Vegetación de Diferencia Normalizada (NDVI) indica qué tan activa y cubierta de vegetación está una zona, comparando la luz reflejada en infrarrojo cercano y rojo visible. Valores altos (tonos verdes en el mapa) se asocian a mayor vigor y cobertura; valores bajos (tonos rojos) a suelo desnudo, salares o estrés. En el Salar de Huasco permite reconocer parches con biomasa microbiana o vascular frente a fondos salinos y áreas áridas del paisaje altoandino."
+    colormap: "RdYlGn"
     diverging: true
     vmin: -0.8
     vmax: 0.8
   ndci:
     label: "NDCI"
-    description: "Clorofila y pigmentos"
+    description: "El Índice de Contenido de Clorofila por Diferencia Normalizada (NDCI) está ligado a la cantidad de clorofila y otros pigmentos en la vegetación y en las comunidades algales del salar. Ayuda a detectar zonas con mayor actividad fotosintética o cambios en el estado fisiológico de las comunidades. Es útil para conversar sobre productividad biológica y posibles estrés ambientales en el humedal."
     colormap: "viridis"
     diverging: true
     vmin: -0.5
     vmax: 0.5
   ndwi:
     label: "NDWI"
-    description: "Agua superficial"
+    description: "El Índice de Agua por Diferencia Normalizada (NDWI) resalta la presencia de agua libre o muy húmeda en la superficie, contrastando el infrarrojo cercano con el verde. En un salar altoandino permite identificar charcas, zonas saturadas o humedales activos frente a suelos secos y costras salinas. Complementa la foto en color cuando el agua es poco visible a simple vista."
     colormap: "BrBG"
     diverging: true
     vmin: -0.4
     vmax: 0.4
   lst:
     label: "LST"
-    description: "Temperatura superficial (°C)"
+    description: "La Temperatura de Superficie (LST) estima cuántos grados Celsius tiene la superficie vista desde el dron, a partir del sensor térmico. Muestra contrastes entre agua, suelo, vegetación y costras salinas que no siempre se aprecian en la foto RGB. En el contexto del Anillo MESS ayuda a relacionar microclima local, evaporación y heterogeneidad del paisaje con los procesos biogeoquímicos del OE2."
     colormap: "inferno"
     diverging: false
     vmin: 10
     vmax: 24
   rgb:
     label: "RGB"
-    description: "Ortomosaico color verdadero"
+    description: "La ortomosaico en color verdadero (RGB) es la fotografía de alta resolución del vuelo de dron, como la veríamos a ojo humano desde el aire. Sirve de referencia para orientarse en el terreno, reconocer caminos, cuerpos de agua y texturas del salar. Es la base sobre la que se superponen los índices espectrales para comparar «lo que vemos» con «lo que mide el sensor»."
     visual_only: true
 
 seasons:
