@@ -58,10 +58,10 @@ raster_visualization:
   opacity: 0.92
   clip_to_aoi: true
   clip_aoi_buffer_m: 0
-  rgb_webp_quality: 94
-  webp_quality_analytic: 96
-  index_preview_max_size: 6144
-  rgb_max_size: 6144
+  rgb_webp_quality: 88
+  webp_quality_analytic: 90
+  index_preview_max_size: 5500
+  rgb_max_size: 5500
   rgb_upscale_factor: 1
   rgb_quantize_colors: 128
   rgb_stretch_percentiles: [2, 98]

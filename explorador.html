@@ -408,7 +408,13 @@ function resetIndexOpacityToFull() {
 }
 
 function initMap() {
-    mapa = L.map('mapa', { center: [-20.30, -68.85], zoom: 14, zoomControl: false, maxZoom: 22 });
+    mapa = L.map('mapa', {
+        center: [-20.30, -68.85],
+        zoom: 14,
+        zoomControl: false,
+        maxZoom: 22,
+        wheelPxPerZoomLevel: 160,
+    });
     L.control.zoom({ position: 'topright' }).addTo(mapa);
     L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(mapa);
     const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
