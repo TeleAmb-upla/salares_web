@@ -108,7 +108,7 @@ indices:
     vmax: 24
   rgb:
     label: "RGB"
-    description: "La ortomosaico en color verdadero (RGB) es la fotografía de alta resolución del vuelo de dron, como la veríamos a ojo humano desde el aire. Sirve de referencia para orientarse en el terreno, reconocer caminos, cuerpos de agua y texturas del salar. Es la base sobre la que se superponen los índices espectrales para comparar «lo que vemos» con «lo que mide el sensor»."
+    description: "El ortomosaico en color verdadero (RGB) es la fotografía de alta resolución del vuelo de dron, como la veríamos a ojo humano desde el aire. Sirve de referencia para orientarse en el terreno, reconocer caminos, cuerpos de agua y texturas del salar. Es la base sobre la que se superponen los índices espectrales para comparar «lo que vemos» con «lo que mide el sensor»."
     visual_only: true
 
 seasons:
