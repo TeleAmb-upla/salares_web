@@ -45,3 +45,22 @@ python -m http.server 8090
 ```
 
 Por ahora solo **P7 (H3)** tiene capas listas; P1–P6 aparecen como polígonos de referencia.
+
+## Publicación en GitHub (`TeleAmb-upla/salares_web`)
+
+El repositorio local ya está inicializado. Para subirlo (requiere acceso a la organización):
+
+```powershell
+cd e:\proyectos_github\salares_web
+gh auth login
+gh repo create TeleAmb-upla/salares_web --public --source=. --remote=origin --push
+```
+
+Si el repositorio ya existe en GitHub:
+
+```powershell
+git remote add origin https://github.com/TeleAmb-upla/salares_web.git
+git push -u origin main
+```
+
+Los GeoTIFF grandes no se versionan (ver `.gitignore`); en cada máquina se generan con `prepare_drone_assets.py` y el export.
