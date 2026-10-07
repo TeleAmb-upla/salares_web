@@ -353,16 +353,67 @@
             image-rendering: auto;
             image-rendering: high-quality;
         }
+        .sheet-handle { display: none; }
         @media (max-width: 720px) {
-            :root { --map-chrome-inset-left: 14px; }
+            :root { --map-chrome-inset-left: 10px; --sheet-h: 150px; }
             .panel {
-                left: max(10px, env(safe-area-inset-left));
-                right: max(10px, env(safe-area-inset-right));
+                left: 0;
+                right: 0;
+                top: auto;
+                bottom: 0;
                 width: auto;
-                bottom: auto;
-                max-height: 44dvh;
+                max-height: 72dvh;
+                border-radius: 14px 14px 0 0;
+                padding-bottom: env(safe-area-inset-bottom);
+                box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.35);
             }
-            .legend-rail--right { top: auto; bottom: 56px; transform: none; }
+            .sheet-handle {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 6px;
+                width: 100%;
+                padding: 8px 0 2px;
+                border: 0;
+                background: none;
+                color: var(--salt-dim);
+                font: inherit;
+                font-size: 0.74rem;
+                cursor: pointer;
+            }
+            .sheet-handle::before {
+                content: "";
+                width: 40px;
+                height: 4px;
+                border-radius: 2px;
+                background: rgba(243, 239, 230, 0.35);
+            }
+            .panel-head { order: 3; border-bottom: 0; border-top: 1px solid var(--line); padding: 0.9rem 1rem 1rem; }
+            .panel-head h1 { font-size: 1.5rem; margin-top: 0.5rem; }
+            .panel-body { order: 2; padding: 0.5rem 1rem 0.9rem; gap: 0.7rem; }
+            .panel:not(.expanded) .panel-head,
+            .panel:not(.expanded) .index-desc,
+            .panel:not(.expanded) .hint,
+            .panel:not(.expanded) .block label,
+            .panel:not(.expanded) .block .block-title { display: none; }
+            .panel:not(.expanded) .panel-body { overflow: hidden; }
+            select { min-height: 44px; font-size: 16px; }
+            .layer-pills { grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); grid-auto-flow: column; }
+            .pill { min-height: 42px; padding: 0.4rem 0.2rem; }
+            .leaflet-control-zoom { display: none; }
+            .leaflet-bottom { bottom: var(--sheet-h); }
+            .map-note { display: none; }
+            .legend-rail--left { top: max(10px, env(safe-area-inset-top)); left: 10px; transform: none; }
+            .legend-rail--right { top: 62px; right: 10px; bottom: auto; transform: none; }
+            .map-legend-dock { padding: 8px 8px 7px; }
+            #colorbarBox { min-width: 58px; }
+            .colorbar-gradient-wrap { height: 110px; width: 14px; }
+            body.sheet-open .map-legend-dock { display: none !important; }
+            .drone-opacity { width: 5.6rem; }
+            .drone-opacity-title { font-size: 0.72rem; text-align: center; }
+            .drone-opacity-sub { display: none; }
+            .drone-opacity-slider-wrap { height: 110px; }
+            .drone-opacity input[type="range"] { width: 110px; height: 28px; }
         }
     </style>
 </head>
@@ -399,6 +450,7 @@
         </div>
         <div class="map-note" id="mapNote">Cargando…</div>
         <aside class="panel" aria-label="Controles del mapa">
+            <button type="button" class="sheet-handle" id="sheetToggle" aria-expanded="false">Más información</button>
             <header class="panel-head">
                 <div class="panel-top">
                     <a class="panel-logo" href="index.html" title="Volver al inicio">
@@ -641,6 +693,7 @@ function buildWetlandSelect() {
 
 function selectWetland(wid) {
     if (!wid) return;
+    if (MOBILE_QUERY.matches) setSheetExpanded(false);
     state.selectedWetland = wid;
     document.getElementById('globalWetland').value = wid;
     state.mapLayerKind = 'rgb';
@@ -687,12 +740,39 @@ function boundsValid(b) {
     return Math.abs(b[0][0]) <= 90 && Math.abs(b[1][0]) <= 90;
 }
 
+const MOBILE_QUERY = window.matchMedia('(max-width: 720px)');
+
+function setSheetExpanded(expanded) {
+    const panel = document.querySelector('.panel');
+    const btn = document.getElementById('sheetToggle');
+    if (!panel || !btn) return;
+    panel.classList.toggle('expanded', expanded);
+    document.body.classList.toggle('sheet-open', expanded);
+    btn.setAttribute('aria-expanded', String(expanded));
+    btn.textContent = expanded ? 'Ocultar información' : 'Más información';
+}
+
+function initMobileSheet() {
+    const panel = document.querySelector('.panel');
+    const btn = document.getElementById('sheetToggle');
+    btn.addEventListener('click', function () {
+        setSheetExpanded(!panel.classList.contains('expanded'));
+    });
+    const syncHeight = function () {
+        const h = MOBILE_QUERY.matches ? panel.offsetHeight : 0;
+        document.documentElement.style.setProperty('--sheet-h', h + 'px');
+    };
+    if (window.ResizeObserver) new ResizeObserver(syncHeight).observe(panel);
+    window.addEventListener('resize', syncHeight);
+    syncHeight();
+}
+
 function fitOptions() {
     const panel = document.querySelector('.panel');
     const gap = 40;
     if (!panel) return { padding: [gap, gap] };
-    if (window.innerWidth <= 720) {
-        return { paddingTopLeft: [gap, panel.offsetHeight + gap], paddingBottomRight: [gap, gap] };
+    if (MOBILE_QUERY.matches) {
+        return { paddingTopLeft: [24, 24], paddingBottomRight: [24, panel.offsetHeight + 24] };
     }
     return { paddingTopLeft: [panel.offsetWidth + 12 + gap, gap], paddingBottomRight: [gap, gap] };
 }
@@ -850,6 +930,7 @@ async function loadAll() {
 
 window.addEventListener('load', function () {
     initMap();
+    initMobileSheet();
     document.getElementById('droneOpacity').addEventListener('input', function (e) {
         state.indexOpacity = Number(e.target.value) / 100;
         document.getElementById('opacityValTop').textContent = e.target.value + '%';
