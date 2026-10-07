@@ -619,18 +619,22 @@ function buildWetlandSelect() {
         state.selectedWetland = ready[0] || keys[0];
     }
     sel.value = state.selectedWetland;
-    sel.onchange = function () {
-        state.selectedWetland = sel.value;
-        state.mapLayerKind = 'rgb';
-        state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, 'rgb');
-        buildLayerPills();
-        state.fitBoundsOnSiteChange = true;
-        updateIndexDescription();
-        updateLayerHint();
-        renderAOI();
-        updateOpacityVisibility();
-        updateMapOverlay(true);
-    };
+    sel.onchange = function () { selectWetland(sel.value); };
+}
+
+function selectWetland(wid) {
+    if (!wid) return;
+    state.selectedWetland = wid;
+    document.getElementById('globalWetland').value = wid;
+    state.mapLayerKind = 'rgb';
+    state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, 'rgb');
+    buildLayerPills();
+    state.fitBoundsOnSiteChange = true;
+    updateIndexDescription();
+    updateLayerHint();
+    renderAOI();
+    updateOpacityVisibility();
+    updateMapOverlay(true);
 }
 
 function renderAOI() {
@@ -651,7 +655,12 @@ function renderAOI() {
         onEachFeature: function (f, layer) {
             const wid = String(f.properties[idCol] || '');
             const info = (meta().wetlands || {})[wid] || {};
-            layer.bindTooltip(info.name || wid, { sticky: true });
+            const active = wid.toLowerCase() === state.selectedWetland;
+            layer.bindTooltip(active ? (info.name || wid) : (info.name || wid) + ' · clic para ver', { sticky: true });
+            if (active) return;
+            layer.on('mouseover', function () { layer.setStyle({ weight: 3, dashArray: '', fillColor: '#f3efe6', fillOpacity: 0.12 }); });
+            layer.on('mouseout', function () { aoiLayer.resetStyle(layer); });
+            layer.on('click', function () { selectWetland(wid.toLowerCase()); });
         },
     }).addTo(mapa);
 }
