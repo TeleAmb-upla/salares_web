@@ -29,7 +29,7 @@ import pipeline_utils  # noqa: F401 — inicializa PROJ (proj.db) antes de raste
 import geopandas as gpd
 import numpy as np
 import rasterio
-from PIL import Image
+from PIL import Image, ImageFilter
 from rasterio.enums import Resampling
 from rasterio.features import geometry_mask, geometry_window
 from rasterio.mask import mask
@@ -54,7 +54,7 @@ OUTPUT_DIR = Path("data_static")
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 # Subir cuando cambien máscaras / recorte RGB en ``build_preview_rgb`` (invalida WebP cacheados con reuse).
-RGB_PREVIEW_MASK_REVISION = 3
+RGB_PREVIEW_MASK_REVISION = 4
 
 SEASON_MID_DATES = {
     "verano": "-02-15",
@@ -419,6 +419,79 @@ def _stretch_to_uint8(data: np.ndarray, valid_mask: np.ndarray, percentiles: tup
     return np.clip(stretched, 0.0, 255.0).astype(np.uint8)
 
 
+def _tone_rgb_uint8(
+    r_u8: np.ndarray,
+    g_u8: np.ndarray,
+    b_u8: np.ndarray,
+    valid_mask: np.ndarray,
+    visualization_cfg: dict,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Gamma, contraste y saturación para que la costra salina no quede lavada."""
+    gamma = float(visualization_cfg.get("rgb_gamma", 1.0))
+    contrast = float(visualization_cfg.get("rgb_contrast", 1.0))
+    saturation = float(visualization_cfg.get("rgb_saturation", 1.0))
+    if gamma == 1.0 and contrast == 1.0 and saturation == 1.0:
+        return r_u8, g_u8, b_u8
+    rgb = np.stack([r_u8, g_u8, b_u8], axis=-1).astype(np.float32) / 255.0
+    rgb = np.clip(rgb, 0.0, 1.0)
+    if gamma != 1.0:
+        rgb = np.power(rgb, gamma)
+    if contrast != 1.0:
+        rgb = (rgb - 0.5) * contrast + 0.5
+    if saturation != 1.0:
+        luma = rgb[..., 0] * 0.2126 + rgb[..., 1] * 0.7152 + rgb[..., 2] * 0.0722
+        rgb = luma[..., None] + (rgb - luma[..., None]) * saturation
+    rgb = np.clip(rgb, 0.0, 1.0)
+    out = (rgb * 255.0 + 0.5).astype(np.uint8)
+    out[~valid_mask] = 0
+    return out[..., 0], out[..., 1], out[..., 2]
+
+
+def _unsharp_rgba(image: Image.Image, visualization_cfg: dict) -> Image.Image:
+    percent = int(visualization_cfg.get("rgb_unsharp_percent", 0) or 0)
+    if percent <= 0 or image.mode != "RGBA":
+        return image
+    rgb = image.convert("RGB").filter(
+        ImageFilter.UnsharpMask(radius=1.1, percent=percent, threshold=2)
+    )
+    return Image.merge("RGBA", (*rgb.split(), image.getchannel("A")))
+
+
+def index_display_limits(
+    data: np.ndarray,
+    nodata_mask: np.ndarray,
+    vmin: float,
+    vmax: float,
+    visualization_cfg: dict,
+    *,
+    min_span: float,
+) -> tuple[float, float]:
+    """
+    Límites de color según el histograma del vuelo (percentiles ``index_stretch_percentiles``).
+    Los índices normalizados se acotan a [-1, 1]; ``vmin``/``vmax`` de config quedan como respaldo.
+    """
+    pcts = visualization_cfg.get("index_stretch_percentiles")
+    if not pcts or len(pcts) != 2:
+        return float(vmin), float(vmax)
+    is_normalized = float(min_span) < 1.0
+    hard_lo, hard_hi = (-1.0, 1.0) if is_normalized else (-np.inf, np.inf)
+    values = np.asarray(data, dtype=np.float64)
+    ok = np.isfinite(values) & ~np.asarray(nodata_mask, dtype=bool)
+    ok &= (values >= hard_lo) & (values <= hard_hi)
+    sample = values[ok]
+    if sample.size < 32:
+        return float(vmin), float(vmax)
+    if sample.size > 4_000_000:
+        sample = sample[:: sample.size // 4_000_000 + 1]
+    lo, hi = np.percentile(sample, [float(pcts[0]), float(pcts[1])])
+    if not np.isfinite(lo) or not np.isfinite(hi):
+        return float(vmin), float(vmax)
+    if hi - lo < float(min_span):
+        mid = 0.5 * (lo + hi)
+        lo, hi = mid - 0.5 * float(min_span), mid + 0.5 * float(min_span)
+    return float(max(hard_lo, lo)), float(min(hard_hi, hi))
+
+
 def _quantize_rgba(image: Image.Image, colors: int) -> Image.Image:
     if colors <= 0 or colors >= 256:
         return image
@@ -516,7 +589,7 @@ def build_preview_rgb(
                             src_crs=src.crs,
                             dst_transform=dst_tr,
                             dst_crs=src.crs,
-                            resampling=Resampling.bilinear,
+                            resampling=Resampling.cubic,
                         )
                         dest_raw = np.empty((out_h, out_w), dtype=np.float32)
                         reproject(
@@ -569,7 +642,7 @@ def build_preview_rgb(
             out_h, out_w = _resolve_preview_shape(native_window_w, native_window_h, rgb_max_size)
             read_kwargs = {
                 "out_shape": (count, out_h, out_w),
-                "resampling": Resampling.bilinear if count >= 3 else Resampling.nearest,
+                "resampling": Resampling.cubic if count >= 3 else Resampling.nearest,
             }
             if window is not None:
                 read_kwargs["window"] = window
@@ -621,6 +694,7 @@ def build_preview_rgb(
                 alpha_u8 = np.where(stretch_ok, alpha_u8, np.uint8(0)).astype(np.uint8)
             else:
                 alpha_u8 = np.where(stretch_ok, np.uint8(255), np.uint8(0)).astype(np.uint8)
+            r_u8, g_u8, b_u8 = _tone_rgb_uint8(r_u8, g_u8, b_u8, stretch_ok, visualization_cfg)
             rgba = np.stack([r_u8, g_u8, b_u8, alpha_u8], axis=-1)
         else:
             stretch_ok = _valid_reflectance_pixels(raw_for_filters, src, inside_mask, 1)
@@ -631,6 +705,7 @@ def build_preview_rgb(
 
     image = Image.fromarray(rgba, "RGBA")
     image = _quantize_rgba(image, rgb_quantize_colors)
+    image = _unsharp_rgba(image, visualization_cfg)
     upscale_factor = max(1, int(visualization_cfg.get("rgb_upscale_factor", visualization_cfg.get("upscale_factor", 1))))
     if upscale_factor > 1:
         image = image.resize(
@@ -702,16 +777,16 @@ def build_preview_raster(
                 masked=True,
                 window=window,
                 out_shape=(out_h, out_w),
-                resampling=Resampling.bilinear,
+                resampling=Resampling.cubic,
             )
         else:
-            ma = src.read(1, masked=True, out_shape=(out_h, out_w), resampling=Resampling.bilinear)
+            ma = src.read(1, masked=True, out_shape=(out_h, out_w), resampling=Resampling.cubic)
         ma = np.ma.squeeze(ma)
         nodata_mask = np.ma.getmaskarray(ma).astype(bool)
         raw_for_norm = np.ma.filled(ma.astype(np.float64), np.nan)
         fill0 = np.where(np.isfinite(raw_for_norm), raw_for_norm, 0.0)
         path_name = Path(tiff_path).name.lower()
-        if "_lst" in path_name:
+        if "_lst" in path_name or "_thermal" in path_name:
             data = raw_for_norm.astype(np.float32)
         else:
             data = normalize_drone_index_band_values(fill0, src, 1).astype(np.float32)
@@ -737,7 +812,12 @@ def build_preview_raster(
     if leaflet_bbox is None:
         return None
 
-    rgba = apply_colormap(data, nodata_mask, vmin, vmax, cmap_name)
+    name_l = Path(tiff_path).name.lower()
+    min_span = 1.5 if ("_lst" in name_l or "_thermal" in name_l or name_l.startswith("m3t_")) else 0.06
+    display_vmin, display_vmax = index_display_limits(
+        data, nodata_mask, vmin, vmax, visualization_cfg, min_span=min_span
+    )
+    rgba = apply_colormap(data, nodata_mask, display_vmin, display_vmax, cmap_name)
 
     image = Image.fromarray(rgba, "RGBA")
     upscale_factor = max(
@@ -767,6 +847,8 @@ def build_preview_raster(
         "display_size": [int(image.width), int(image.height)],
         "render_mode": "smooth",
         "opacity": float(visualization_cfg.get("opacity", 0.9)),
+        "vmin": round(float(display_vmin), 4),
+        "vmax": round(float(display_vmax), 4),
     }
 
 
@@ -1004,6 +1086,42 @@ FLAT_DRONE_NAME = re.compile(
     r"(ndvi|ndwi|ndci|lst|rgb)\.(?:tif|tiff)$",
     re.I,
 )
+SITE_FOLDER = re.compile(r"^[Pp]\d+$", re.I)
+DRONE_RASTER_NAME = re.compile(
+    r"^M3[MT]_HUA_"
+    r"(?P<date>\d{4}[_-]\d{2}[_-]\d{2})"
+    r"(?:_P\d+)?"
+    r"(?:_(?P<index>rgb|ndvi|ndwi|ndci|thermal|lst))?"
+    r"\.(?:tif|tiff)$",
+    re.I,
+)
+# M3M apilado: 1 Red, 2 Green, 3 Blue (RGB), 4 Green, 5 Red, 6 RedEdge, 7 NIR.
+M3M_INDEX_PAIRS = {
+    "ndvi": (7, 5),
+    "ndci": (6, 5),
+    "ndwi": (4, 7),
+}
+
+
+def parse_flat_drone_tiff(path: Path) -> tuple[str, str, str] | None:
+    """Devuelve ``(wetland_id, ymd_raw, index_key)`` o ``None`` si el nombre no coincide."""
+    parsed = FLAT_DRONE_NAME.match(path.name)
+    if parsed:
+        return parsed.group(1).lower(), parsed.group(2), parsed.group(4).lower()
+    parsed_raster = DRONE_RASTER_NAME.match(path.name)
+    if not parsed_raster:
+        return None
+    parent = path.parent.name
+    if not SITE_FOLDER.match(parent):
+        return None
+    index_raw = parsed_raster.group("index")
+    if not index_raw:
+        index_key = "lst" if path.name.upper().startswith("M3T") else "rgb"
+    else:
+        index_key = index_raw.lower()
+        if index_key == "thermal":
+            index_key = "lst"
+    return parent.lower(), parsed_raster.group("date"), index_key
 
 
 def discover_flat_drone_tiffs(source_cfg: dict) -> list[Path]:
@@ -1014,7 +1132,7 @@ def discover_flat_drone_tiffs(source_cfg: dict) -> list[Path]:
         for path in root.rglob("*"):
             if not path.is_file() or path.suffix.lower() not in (".tif", ".tiff"):
                 continue
-            if FLAT_DRONE_NAME.match(path.name):
+            if parse_flat_drone_tiff(path):
                 paths.append(path)
     return sorted(paths)
 
@@ -1048,6 +1166,232 @@ def resolve_pause_between_drone_tiffs_sec(visualization_cfg: dict) -> float:
     return sec
 
 
+def _normalized_difference(high: np.ndarray, low: np.ndarray) -> np.ndarray:
+    """(high - low) / (high + low), con nodata donde falta reflectancia."""
+    a = np.asarray(high, dtype=np.float64)
+    b = np.asarray(low, dtype=np.float64)
+    den = a + b
+    out = np.full(a.shape, np.nan, dtype=np.float32)
+    ok = np.isfinite(a) & np.isfinite(b) & (a > 0) & (b > 0) & (den > 0)
+    out[ok] = ((a[ok] - b[ok]) / den[ok]).astype(np.float32)
+    bad = np.isfinite(out) & ((out < -1.5) | (out > 1.5))
+    out[bad] = np.nan
+    return out
+
+
+def _read_preview_bands(src, band_indexes: list[int], max_size, geom_wgs84, clip_to_aoi: bool):
+    window = None
+    geom_crs = None
+    bounds = src.bounds
+    use_clip = bool(clip_to_aoi and geom_wgs84 is not None)
+    if use_clip:
+        geom_crs = _clip_geom_to_crs(geom_wgs84, src.crs)
+        try:
+            window = geometry_window(src, [geom_crs], pad_x=0, pad_y=0)
+            bounds = window_bounds(window, src.transform)
+        except Exception:
+            window = None
+            geom_crs = None
+            use_clip = False
+            bounds = src.bounds
+    nw = int(window.width) if window is not None else int(src.width)
+    nh = int(window.height) if window is not None else int(src.height)
+    out_h, out_w = _resolve_preview_shape(nw, nh, max_size)
+    read_kw = {
+        "indexes": list(band_indexes),
+        "masked": True,
+        "out_shape": (len(band_indexes), out_h, out_w),
+        "resampling": Resampling.cubic,
+    }
+    if window is not None:
+        read_kw["window"] = window
+    ma = src.read(**read_kw)
+    arr = np.ma.filled(np.ma.asarray(ma).astype(np.float32), np.nan)
+    if arr.ndim == 2:
+        arr = arr[np.newaxis, ...]
+    left, bottom, right, top = (
+        (bounds[0], bounds[1], bounds[2], bounds[3])
+        if isinstance(bounds, (tuple, list)) and len(bounds) >= 4
+        else (bounds.left, bounds.bottom, bounds.right, bounds.top)
+    )
+    if use_clip and geom_crs is not None:
+        out_transform = from_bounds(left, bottom, right, top, out_w, out_h)
+        outside = ~geometry_mask([geom_crs], out_shape=(out_h, out_w), transform=out_transform, invert=True)
+        arr[:, outside] = np.nan
+    leaflet = leaflet_corners_from_affine_bounds(left, bottom, right, top, src.crs)
+    return arr, leaflet, [nw, nh]
+
+
+def derive_missing_m3m_indices(
+    *,
+    tiff_path: Path,
+    code_wid: str,
+    ymd: str,
+    period_key: str,
+    period_human: str,
+    year: int,
+    iso_date: str,
+    ctx: dict,
+    source_key: str,
+    visualization_cfg: dict,
+    indices_cfg: dict,
+    source_indices: list[str],
+    available_products: set[tuple[str, str, str]],
+    rasters_dir: Path,
+    preview_ext: str,
+    existing_rasters: dict,
+    rasters_index: dict,
+    source_timeseries: dict,
+    source_fingerprint: dict,
+    preview_geom,
+    geom_union: dict,
+) -> int:
+    """
+    Si el GeoTIFF M3M trae las 7 bandas y no hay un TIFF de índice aparte,
+    calcula NDVI, NDCI y NDWI y los deja como WebP del explorador.
+    """
+    missing = []
+    for key in ("ndvi", "ndci", "ndwi"):
+        if key not in source_indices:
+            continue
+        if (code_wid, ymd, key) in available_products:
+            continue
+        existing_key = f"{code_wid}_{period_key}_{key}"
+        if existing_key in rasters_index:
+            continue
+        if os.environ.get("DRONE_ONLY_MISSING", "").strip() == "1" and existing_key in existing_rasters:
+            rasters_index[existing_key] = existing_rasters[existing_key]
+            continue
+        missing.append(key)
+    if not missing:
+        return 0
+
+    clip = bool(visualization_cfg.get("clip_to_aoi", False))
+    max_dim = visualization_cfg.get("index_preview_max_size") or visualization_cfg.get("rgb_max_size")
+    with rasterio.open(tiff_path) as src:
+        if int(src.count) < 7:
+            return 0
+        bands, leaflet, native_hw = _read_preview_bands(src, [4, 5, 6, 7], max_dim, preview_geom, clip)
+    if leaflet is None or bands.shape[0] < 4:
+        print(f"  [flat] No se pudieron leer bandas MS de {tiff_path.name}")
+        return 0
+
+    green, red, rededge, nir = bands[0], bands[1], bands[2], bands[3]
+    computed = {
+        "ndvi": _normalized_difference(nir, red),
+        "ndci": _normalized_difference(rededge, red),
+        "ndwi": _normalized_difference(green, nir),
+    }
+    stem = Path(tiff_path.name).stem
+    if stem.lower().endswith("_rgb"):
+        stem = stem[:-4]
+    written = 0
+    for key in missing:
+        data = computed[key]
+        index_cfg = indices_cfg.get(key, {})
+        nodata_mask = ~np.isfinite(data)
+        if int((~nodata_mask).sum()) < 32:
+            print(f"  [flat] {key.upper()} sin píxeles válidos en {tiff_path.name}")
+            continue
+        display_vmin, display_vmax = index_display_limits(
+            data,
+            nodata_mask,
+            float(index_cfg["vmin"]),
+            float(index_cfg["vmax"]),
+            visualization_cfg,
+            min_span=0.06,
+        )
+        raster_key = f"{code_wid}_{period_key}_{key}"
+        preview_path = rasters_dir / f"{code_wid}_{stem}_{key}.{preview_ext}"
+        export_signature = build_export_signature(
+            {
+                "visualization": visualization_cfg,
+                "index": key,
+                "colormap": index_cfg["colormap"],
+                "vmin": index_cfg["vmin"],
+                "vmax": index_cfg["vmax"],
+                "preview_geom_sha": preview_clip_geom_digest(geom_union),
+                "mode": "analytic_preview_from_m3m_stack",
+                "bands": list(M3M_INDEX_PAIRS[key]),
+            }
+        )
+        preview_meta = reuse_existing_preview(
+            existing_rasters,
+            raster_key,
+            preview_path,
+            export_signature,
+            source_fingerprint,
+            reuse_if_unchanged=_reuse_previews_allowed(visualization_cfg),
+        )
+        if preview_meta is None:
+            rgba = apply_colormap(data, nodata_mask, display_vmin, display_vmax, index_cfg["colormap"])
+            image = Image.fromarray(rgba, "RGBA")
+            preview_path.parent.mkdir(parents=True, exist_ok=True)
+            preview_format = str(visualization_cfg.get("preview_format", "WEBP")).upper()
+            if preview_format == "WEBP":
+                quality = int(visualization_cfg.get("webp_quality_analytic", 86))
+                save_kwargs = {"quality": max(30, min(quality, 100)), "method": 6}
+            else:
+                save_kwargs = {"optimize": True}
+            _unlink_preview_output(preview_path, visualization_cfg)
+            image.save(preview_path, format=preview_format, **save_kwargs)
+            preview_meta = {
+                "path": preview_path.relative_to(OUTPUT_DIR).as_posix(),
+                "bounds": leaflet,
+                "format": preview_format,
+                "native_size": native_hw,
+                "display_size": [int(image.width), int(image.height)],
+                "render_mode": "smooth",
+                "opacity": float(visualization_cfg.get("opacity", 0.9)),
+                "vmin": round(float(display_vmin), 4),
+                "vmax": round(float(display_vmax), 4),
+            }
+        else:
+            preview_meta = dict(preview_meta)
+            preview_meta["vmin"] = round(float(display_vmin), 4)
+            preview_meta["vmax"] = round(float(display_vmax), 4)
+        mean_value = _trimmed_physical_mean(data, nodata_mask)
+        if mean_value is not None:
+            point = {
+                "date": iso_date,
+                "label": period_human,
+                "year": year,
+                "season_key": "vuelo",
+                "season_label": period_human,
+                "period_key": period_key,
+                "value": round(mean_value, 4),
+            }
+            wentry = source_timeseries["wetlands"].setdefault(
+                code_wid,
+                {"name": ctx.get("name", code_wid), "indices": {}},
+            )
+            wentry["indices"].setdefault(key, {"points": [], "metrics": {}})
+            wentry["indices"][key]["points"].append(point)
+        rasters_index[raster_key] = {
+            "source": source_key,
+            "wetland_id": code_wid,
+            "index": key,
+            "year": year,
+            "season": period_human,
+            "period_key": period_key,
+            "visual": preview_meta,
+            "analytic_path": Path(tiff_path).as_posix(),
+            "source_fingerprint": source_fingerprint,
+            "export_signature": export_signature,
+        }
+        written += 1
+        print(f"  [flat] {key.upper()} <- bandas M3M {tiff_path.name} -> {preview_path.name}")
+    return written
+
+
+def drone_only_site_ids() -> set[str] | None:
+    """Si ``DRONE_ONLY_SITES=p4`` (o una lista), no lee los GeoTIFF de los demás sitios."""
+    raw = os.environ.get("DRONE_ONLY_SITES", "").strip()
+    if not raw:
+        return None
+    return {part.strip().lower() for part in raw.split(",") if part.strip()}
+
+
 def ingest_flat_drone_date_assets(
     *,
     source_cfg: dict,
@@ -1063,8 +1407,25 @@ def ingest_flat_drone_date_assets(
     rasters_index: dict,
 ) -> int:
     paths = discover_flat_drone_tiffs(source_cfg)
+    only_missing = os.environ.get("DRONE_ONLY_MISSING", "").strip() == "1"
+    force_keys = {k.strip() for k in os.environ.get("DRONE_FORCE_KEYS", "").split(",") if k.strip()}
+    only_sites = drone_only_site_ids()
+    if only_sites:
+        paths = [path for path in paths if (parsed := parse_flat_drone_tiff(path)) and parsed[0] in only_sites]
+        print(f"  [flat] Solo sitios {', '.join(sorted(only_sites))}: {len(paths)} TIFF", flush=True)
     if not paths:
         return 0
+
+    available_products: set[tuple[str, str, str]] = set()
+    for tiff_path in paths:
+        parsed_product = parse_flat_drone_tiff(tiff_path)
+        if not parsed_product:
+            continue
+        product_wid, product_ymd_raw, product_index = parsed_product
+        try:
+            available_products.add((product_wid, _flat_filename_date_to_ymd(product_ymd_raw), product_index))
+        except ValueError:
+            continue
 
     preview_ext = str(visualization_cfg.get("preview_format", "WEBP")).lower()
     clip_aoi_buffer_m = _clip_aoi_buffer_m(visualization_cfg)
@@ -1091,11 +1452,11 @@ def ingest_flat_drone_date_assets(
         if i > 0 and pause_sec > 0:
             time.sleep(pause_sec)
         gc.collect()
-        parsed = FLAT_DRONE_NAME.match(tiff_path.name)
-        if not parsed:
+        parsed_flat = parse_flat_drone_tiff(tiff_path)
+        if not parsed_flat:
             bump_skip("parse_failed", file=tiff_path.name)
             continue
-        code_wid, ymd_raw, index_key = parsed.group(1).lower(), parsed.group(2), parsed.group(4).lower()
+        code_wid, ymd_raw, index_key = parsed_flat
         try:
             ymd = _flat_filename_date_to_ymd(ymd_raw)
         except ValueError:
@@ -1119,8 +1480,37 @@ def ingest_flat_drone_date_assets(
             bump_skip("duplicate_raster_key", file=tiff_path.name, raster_key=raster_key)
             continue
 
+        if only_missing and raster_key in existing_rasters and raster_key not in force_keys:
+            rasters_index[raster_key] = existing_rasters[raster_key]
+            periods_set.add((period_key, f"Vuelo {period_human}"))
+            if index_key == "rgb":
+                n_new += derive_missing_m3m_indices(
+                    tiff_path=tiff_path,
+                    code_wid=code_wid,
+                    ymd=ymd,
+                    period_key=period_key,
+                    period_human=period_human,
+                    year=year,
+                    iso_date=iso_date,
+                    ctx=ctx,
+                    source_key=source_key,
+                    visualization_cfg=viz_flat,
+                    indices_cfg=indices_cfg,
+                    source_indices=source_indices,
+                    available_products=available_products,
+                    rasters_dir=rasters_dir,
+                    preview_ext=preview_ext,
+                    existing_rasters=existing_rasters,
+                    rasters_index=rasters_index,
+                    source_timeseries=source_timeseries,
+                    source_fingerprint=build_file_fingerprint(tiff_path),
+                    preview_geom=preview_geom_flat,
+                    geom_union=geom_union,
+                )
+            continue
+
         stem = Path(tiff_path.name).stem
-        preview_path = rasters_dir / f"{stem}.{preview_ext}"
+        preview_path = rasters_dir / f"{code_wid}_{stem}.{preview_ext}"
         index_cfg = indices_cfg.get(index_key, {})
         visual_only = index_cfg.get("visual_only", False)
         source_fingerprint = build_file_fingerprint(tiff_path)
@@ -1223,6 +1613,30 @@ def ingest_flat_drone_date_assets(
         }
         n_new += 1
         print(f"  [flat] WebP <- {tiff_path.name} -> {preview_path.name}")
+        if index_key == "rgb":
+            n_new += derive_missing_m3m_indices(
+                tiff_path=tiff_path,
+                code_wid=code_wid,
+                ymd=ymd,
+                period_key=period_key,
+                period_human=period_human,
+                year=year,
+                iso_date=iso_date,
+                ctx=ctx,
+                source_key=source_key,
+                visualization_cfg=viz_flat,
+                indices_cfg=indices_cfg,
+                source_indices=source_indices,
+                available_products=available_products,
+                rasters_dir=rasters_dir,
+                preview_ext=preview_ext,
+                existing_rasters=existing_rasters,
+                rasters_index=rasters_index,
+                source_timeseries=source_timeseries,
+                source_fingerprint=source_fingerprint,
+                preview_geom=preview_geom_flat,
+                geom_union=geom_union,
+            )
 
     return n_new
 
@@ -1599,6 +2013,31 @@ def export_source(
             info["last_period"] = last_lbl
             info["available_years"] = sorted(yrs)
             info["status"] = "ready" if uniq else info.get("status", "empty")
+
+    only_sites = drone_only_site_ids()
+    if only_sites and source_key == "drone":
+        configured = {str(w).lower() for w in config["wetlands"]}
+        kept = configured - only_sites
+        for key, entry in existing_rasters.items():
+            if str(entry.get("wetland_id", "")).lower() in kept:
+                rasters_index.setdefault(key, entry)
+                periods_set.add((entry["period_key"], f"Vuelo {entry['season']}"))
+        for wid, wentry in existing_timeseries.get("wetlands", {}).items():
+            if str(wid).lower() in kept:
+                source_timeseries["wetlands"][wid] = wentry
+        for wid, info in existing_metadata.get("wetlands", {}).items():
+            if str(wid).lower() in kept:
+                wetlands_info[wid] = info
+        if os.environ.get("DRONE_ONLY_MISSING", "").strip() == "1":
+            for wid, wentry in existing_timeseries.get("wetlands", {}).items():
+                if str(wid).lower() not in only_sites:
+                    continue
+                target = source_timeseries["wetlands"].setdefault(
+                    wid, {"name": wentry.get("name", wid), "indices": {}}
+                )
+                for ikey, ientry in wentry.get("indices", {}).items():
+                    if not target["indices"].get(ikey, {}).get("points"):
+                        target["indices"][ikey] = ientry
 
     source_has_data = total_points > 0 or total_visual_rasters > 0 or len(rasters_index) > 0
     source_timeseries["source"]["has_data"] = source_has_data

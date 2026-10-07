@@ -6,246 +6,377 @@
     <title>Salar de Huasco · Anillo MESS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --moss: #4a5d3f;
-            --moss-light: #6b7f5c;
-            --brick: #b54a32;
-            --brick-deep: #8f3828;
-            --orange: #d97a2e;
-            --pale: #f5e6b8;
-            --sand: #faf6ee;
-            --ink: #2a2620;
-            --muted: #5c564c;
+            --night: #111618;
+            --salt: #f3efe6;
+            --salt-dim: #bdb7aa;
+            --paper: #f6f2ea;
+            --ink: #1d2124;
+            --muted: #5b5e60;
+            --rule: rgba(29, 33, 36, 0.15);
+            --accent: #c9545f;
+            --serif: 'Fraunces', Georgia, serif;
+            --mono: 'IBM Plex Mono', ui-monospace, monospace;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            min-height: 100dvh;
             font-family: 'DM Sans', system-ui, sans-serif;
             color: var(--ink);
+            background: var(--paper);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: inherit; }
+        h1, h2, h3 { font-family: var(--serif); font-weight: 300; }
+
+        .wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 3rem); }
+        section { padding: clamp(4rem, 9vw, 6.5rem) 0; }
+
+        /* Barra superior */
+        .topbar {
+            position: absolute;
+            inset: 0 0 auto 0;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 1.4rem clamp(1.25rem, 4vw, 3rem);
+            color: var(--salt);
+            font-size: 0.92rem;
+        }
+        .topbar strong { font-weight: 700; }
+        .topbar a { text-decoration: none; }
+        .topbar a:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+        /* Portada */
+        .hero {
+            position: relative;
+            min-height: 100dvh;
+            display: flex;
+            align-items: flex-end;
+            color: var(--salt);
+            background: var(--night) url("assets/img/huasco/hero_p4.webp") center / cover no-repeat;
+        }
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
             background:
-                radial-gradient(ellipse 90% 60% at 10% 0%, rgba(217, 122, 46, 0.14), transparent 55%),
-                radial-gradient(ellipse 70% 50% at 95% 20%, rgba(74, 93, 63, 0.12), transparent 50%),
-                linear-gradient(168deg, var(--sand) 0%, #efe6d4 42%, #e8dcc8 100%);
-            line-height: 1.65;
+                linear-gradient(180deg, rgba(17, 22, 24, 0.5) 0%, rgba(17, 22, 24, 0) 18%, rgba(17, 22, 24, 0) 62%, rgba(17, 22, 24, 0.8) 100%),
+                linear-gradient(75deg, rgba(17, 22, 24, 0.85) 0%, rgba(17, 22, 24, 0.45) 45%, rgba(17, 22, 24, 0) 75%);
         }
-        .page {
-            max-width: 920px;
+        .hero-inner {
+            position: relative;
+            width: 100%;
+            max-width: 1180px;
             margin: 0 auto;
-            padding: clamp(1.5rem, 4vw, 3rem) clamp(1.25rem, 4vw, 2.5rem) 3rem;
+            padding: 0 clamp(1.25rem, 4vw, 3rem) clamp(2.5rem, 7vh, 4rem);
         }
+        .hero h1 {
+            font-size: clamp(3rem, 9vw, 7.2rem);
+            line-height: 0.95;
+            letter-spacing: -0.02em;
+        }
+        .hero h1 em {
+            display: block;
+            font-style: italic;
+            font-size: 0.45em;
+            color: var(--salt-dim);
+            margin-top: 0.4rem;
+        }
+        .hero .lead {
+            max-width: 31rem;
+            margin-top: 1.4rem;
+            font-size: 1.08rem;
+            color: rgba(243, 239, 230, 0.88);
+        }
+        .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1.6rem; margin-top: 2rem; }
+        .btn {
+            display: inline-block;
+            padding: 0.85rem 1.4rem;
+            background: var(--salt);
+            color: var(--night);
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 2px;
+        }
+        .btn:hover { background: #fff; }
+        .text-link {
+            text-decoration: underline;
+            text-underline-offset: 4px;
+            text-decoration-thickness: 1px;
+        }
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 0.4rem 2rem;
+            margin-top: clamp(2.5rem, 7vh, 3.5rem);
+            padding-top: 0.9rem;
+            border-top: 1px solid rgba(243, 239, 230, 0.25);
+            font-size: 0.82rem;
+            color: rgba(243, 239, 230, 0.7);
+        }
+
+        h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.05;
+            letter-spacing: -0.01em;
+        }
+        .section-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+            gap: 1.2rem 4rem;
+            align-items: end;
+            margin-bottom: clamp(2rem, 5vw, 3rem);
+        }
+        .section-head p { color: var(--muted); font-size: 1.04rem; max-width: 34rem; }
+
+        /* Galería de capas */
+        .layers { background: var(--night); color: var(--salt); }
+        .layers .section-head p { color: var(--salt-dim); }
+        .tiles {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 1.5rem 12px;
+        }
+        .tile img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            background: #1a2124;
+        }
+        .tile figcaption { margin-top: 0.75rem; font-size: 0.9rem; color: var(--salt-dim); }
+        .tile figcaption b { display: block; color: var(--salt); font-weight: 500; font-size: 1rem; }
+        .tile code {
+            display: block;
+            margin-top: 0.3rem;
+            font-family: var(--mono);
+            font-size: 0.74rem;
+            color: var(--salt-dim);
+            opacity: 0.8;
+        }
+        .layers .caption { margin-top: 2.2rem; font-size: 0.85rem; color: rgba(243, 239, 230, 0.5); }
+
+        /* Capítulos */
+        .chapters { border-top: 1px solid var(--rule); }
+        .chapter {
+            display: grid;
+            grid-template-columns: 3rem minmax(0, 1fr) minmax(0, 1.4fr);
+            gap: 0.8rem 2.5rem;
+            padding: clamp(2rem, 4vw, 2.8rem) 0;
+            border-bottom: 1px solid var(--rule);
+        }
+        .chapter .num { font-family: var(--mono); font-size: 0.85rem; color: var(--muted); padding-top: 0.35rem; }
+        .chapter h3 { font-weight: 400; font-size: clamp(1.35rem, 2.2vw, 1.7rem); line-height: 1.2; }
+        .chapter h3 + span { display: block; margin-top: 0.5rem; font-style: italic; color: var(--muted); }
+        .chapter p { color: var(--muted); margin-bottom: 0.9rem; }
+        .chapter p:last-child { margin-bottom: 0; }
+        .chapter strong { color: var(--ink); font-weight: 500; }
+
+        /* Llamado final */
+        .cta-band {
+            position: relative;
+            color: var(--salt);
+            background: var(--night) url("assets/img/huasco/cta_ndvi.webp") center / cover;
+        }
+        .cta-band::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(17, 22, 24, 0.92) 0%, rgba(17, 22, 24, 0.7) 50%, rgba(17, 22, 24, 0.35) 100%);
+        }
+        .cta-band .wrap { position: relative; }
+        .cta-band h2 { max-width: 15ch; }
+        .cta-band p { max-width: 30rem; margin: 1.1rem 0 1.8rem; color: rgba(243, 239, 230, 0.82); }
+
+        /* Pie con logos */
+        footer { padding: 3rem 0 2.5rem; }
         .logos {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             justify-content: center;
-            gap: clamp(1rem, 3vw, 2rem);
-            padding: 1.25rem 1rem;
-            margin-bottom: 2rem;
-            background: rgba(255, 255, 255, 0.55);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.85);
-            box-shadow: 0 12px 40px rgba(42, 38, 32, 0.06);
+            gap: clamp(1.25rem, 4vw, 3rem);
         }
-        .logos a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.35rem 0.5rem;
-            border-radius: 12px;
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        .logos a { display: flex; }
+        .logos img { display: block; height: clamp(44px, 8vw, 58px); width: auto; max-width: 190px; object-fit: contain; }
+        .logos img.logo-ua { height: clamp(40px, 7.5vw, 52px); }
+        .footnote { margin-top: 2rem; text-align: center; font-size: 0.82rem; color: var(--muted); }
+
+        @media (max-width: 980px) {
+            .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .section-head { grid-template-columns: 1fr; }
+            .chapter { grid-template-columns: 2.5rem minmax(0, 1fr); }
+            .chapter > div:last-child { grid-column: 2; }
         }
-        .logos a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(42, 38, 32, 0.1);
-        }
-        .logos img {
-            display: block;
-            height: clamp(48px, 9vw, 64px);
-            width: auto;
-            max-width: 200px;
-            object-fit: contain;
-        }
-        .logos img.logo-ua {
-            height: clamp(44px, 8.5vw, 58px);
-            max-width: min(200px, 28vw);
-        }
-        .hero {
-            text-align: center;
-            margin-bottom: 2.25rem;
-        }
-        .kicker {
-            display: inline-block;
-            font-size: 0.72rem;
-            font-weight: 700;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--moss);
-            background: rgba(74, 93, 63, 0.12);
-            padding: 0.35rem 0.85rem;
-            border-radius: 999px;
-            margin-bottom: 1rem;
-        }
-        h1 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: clamp(2.1rem, 5.5vw, 3rem);
-            font-weight: 600;
-            line-height: 1.12;
-            color: var(--brick-deep);
-            margin-bottom: 0.65rem;
-        }
-        .subtitle {
-            font-size: clamp(1.05rem, 2.5vw, 1.2rem);
-            color: var(--muted);
-            max-width: 36em;
-            margin: 0 auto;
-        }
-        .content {
-            display: grid;
-            gap: 1.35rem;
-        }
-        .card {
-            background: rgba(255, 255, 255, 0.72);
-            border: 1px solid rgba(255, 255, 255, 0.92);
-            border-radius: 22px;
-            padding: 1.5rem 1.65rem;
-            box-shadow: 0 10px 36px rgba(42, 38, 32, 0.06);
-        }
-        .card h2 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: 1.28rem;
-            font-weight: 600;
-            color: var(--moss);
-            margin-bottom: 0.65rem;
-        }
-        .card p {
-            font-size: 1.02rem;
-            color: var(--muted);
-            margin-bottom: 0.85rem;
-        }
-        .card p:last-child { margin-bottom: 0; }
-        .oe-tag {
-            display: inline-block;
-            margin-top: 0.5rem;
-            padding: 0.3rem 0.75rem;
-            border-radius: 8px;
-            background: linear-gradient(135deg, rgba(181, 74, 50, 0.12), rgba(245, 230, 184, 0.5));
-            border-left: 3px solid var(--brick);
-            font-size: 0.88rem;
-            color: var(--ink);
-        }
-        .actions {
-            text-align: center;
-            margin-top: 2rem;
-        }
-        .cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.55rem;
-            padding: 0.95rem 1.75rem;
-            border-radius: 999px;
-            background: linear-gradient(135deg, var(--brick), var(--orange));
-            color: #fff;
-            font-weight: 700;
-            font-size: 1.05rem;
-            text-decoration: none;
-            box-shadow: 0 10px 32px rgba(181, 74, 50, 0.35);
-            transition: transform 0.15s ease, box-shadow 0.15s ease;
-        }
-        .cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 36px rgba(181, 74, 50, 0.42);
-        }
-        .note {
-            margin-top: 1rem;
-            font-size: 0.82rem;
-            color: var(--muted);
-            text-align: center;
+        @media (max-width: 600px) {
+            .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .chapter { grid-template-columns: 1fr; }
+            .chapter > div:last-child { grid-column: auto; }
+            .hero-meta { flex-direction: column; }
         }
     </style>
 </head>
 <body>
-    <div class="page">
-        <nav class="logos" aria-label="Instituciones participantes">
-            <a href="https://www.uantof.cl/" target="_blank" rel="noopener noreferrer" title="Universidad de Antofagasta">
-                <img class="logo-ua" src="assets/img/uantof_logo.svg" alt="Universidad de Antofagasta">
-            </a>
-            <a href="https://www.upla.cl/" target="_blank" rel="noopener noreferrer" title="Universidad de Playa Ancha">
-                <img src="assets/img/upla_logo.png" alt="Universidad de Playa Ancha">
-            </a>
-            <a href="https://hubambientalupla.cl/" target="_blank" rel="noopener noreferrer" title="HUB Ambiental UPLA">
-                <img src="assets/img/hub_logo.png" alt="HUB Ambiental Universidad de Playa Ancha">
-            </a>
-            <a href="https://teleamb.cl/" target="_blank" rel="noopener noreferrer" title="Laboratorio TeleAmb">
-                <img src="assets/img/teleamb_logo.png" alt="Laboratorio TeleAmb">
-            </a>
-        </nav>
+    <header class="topbar">
+        <span><strong>Anillo MESS</strong> — Salar de Huasco</span>
+        <a href="explorador.html">Mapa interactivo</a>
+    </header>
 
-        <header class="hero">
-            <p class="kicker">Proyecto Anillo MESS · Resultados preliminares</p>
-            <h1>El Salar de Huasco visto desde el cielo</h1>
-            <p class="subtitle">
+    <section class="hero" aria-label="Portada">
+        <div class="hero-inner">
+            <h1>Salar de Huasco<em>visto desde el cielo</em></h1>
+            <p class="lead">
                 Una ventana abierta al trabajo del Anillo de Salares: mapas de alta resolución
                 para conocer mejor un humedal altoandino único.
             </p>
-        </header>
-
-        <div class="content">
-            <section class="card">
-                <h2>¿De qué se trata el Anillo MESS?</h2>
-                <p>
-                    El proyecto <strong>MESS</strong> (<em>Microbial Ecosystem Services of Salares</em>)
-                    reúne a equipos de varias universidades para estudiar los <strong>servicios ecosistémicos
-                    microbianos</strong> en los salares del norte de Chile: su diversidad, su papel en los
-                    ciclos de nutrientes y gases de efecto invernadero, y su valor para la sociedad.
-                </p>
-                <p>
-                    Esta página es una <strong>base preliminar de difusión</strong>: un primer acercamiento
-                    visual al Salar de Huasco dentro del sitio web del Anillo MESS, pensado para
-                    compartir resultados con comunidad, estudiantes y equipos colaboradores.
-                </p>
-            </section>
-
-            <section class="card">
-                <h2>Objetivo específico 2 y este mapa</h2>
-                <p>
-                    Dentro del anillo, el <strong>objetivo específico 2</strong> aborda los
-                    <strong>ciclos biogeoquímicos y el cambio climático</strong>: comprender cómo las
-                    comunidades microbianas participan en el intercambio de gases y en la dinámica del
-                    salar, desde la escala del suelo hasta paisajes enteros.
-                </p>
-                <p>
-                    Aquí mostramos un avance con <strong>vuelos de dron</strong> en el sitio
-                    <strong>P7 (H3)</strong>: fotografías en color verdadero e imágenes que resaltan
-                    vegetación, agua, pigmentos y temperatura de la superficie — una mirada mucho más
-                    detallada que la de los satélites habituales.
-                </p>
-                <p class="oe-tag">
-                    OE2 · Ciclos biogeoquímicos y cambio climático · Salar de Huasco
-                </p>
-            </section>
-
-            <section class="card">
-                <h2>Qué puedes explorar</h2>
-                <p>
-                    En el mapa interactivo puedes recorrer el polígono del vuelo, cambiar entre
-                    <strong>color natural (RGB)</strong>, <strong>índice de vegetación (NDVI)</strong>,
-                    <strong>clorofila (NDCI)</strong>, <strong>agua superficial (NDWI)</strong> y
-                    <strong>temperatura (LST)</strong>, y ajustar la transparencia para comparar
-                    capas sobre la foto base.
-                </p>
-                <p>
-                    Es un resultado en construcción: pronto sumaremos el resto de los sitios de vuelo
-                    (P1–P6) cuando estén listos los datos georreferenciados.
-                </p>
-            </section>
+            <div class="hero-actions">
+                <a class="btn" href="explorador.html">Entrar al mapa interactivo</a>
+                <a class="text-link" href="#capas">Ver las capas</a>
+            </div>
+            <div class="hero-meta">
+                <span>20°19′ S, 68°50′ O · 3 800 m s.n.m.</span>
+                <span>Sitio P4, vuelo del 27 de enero de 2026</span>
+            </div>
         </div>
+    </section>
 
-        <div class="actions">
-            <a class="cta" href="explorador.html">Entrar al mapa interactivo</a>
-            <p class="note">Abre el sitio con un servidor local en la carpeta del proyecto (por ejemplo <code>python -m http.server 8090</code>).</p>
+    <section class="layers" id="capas">
+        <div class="wrap">
+            <div class="section-head">
+                <h2>Cinco lecturas de un mismo paisaje</h2>
+                <p>
+                    Cada vuelo registra la luz reflejada en varias bandas del espectro. Al combinarlas
+                    aparecen la vegetación, el agua, los pigmentos y el calor de la superficie,
+                    que la foto en color no muestra a simple vista.
+                </p>
+            </div>
+            <div class="tiles">
+                <figure class="tile">
+                    <img src="assets/img/huasco/tile_rgb.webp" alt="Ortomosaico en color verdadero del sitio P4" loading="lazy">
+                    <figcaption><b>RGB</b>Color verdadero</figcaption>
+                </figure>
+                <figure class="tile">
+                    <img src="assets/img/huasco/tile_ndvi.webp" alt="NDVI del sitio P4" loading="lazy">
+                    <figcaption><b>NDVI</b>Vigor de la vegetación<code>(NIR − R) / (NIR + R)</code></figcaption>
+                </figure>
+                <figure class="tile">
+                    <img src="assets/img/huasco/tile_ndci.webp" alt="NDCI del sitio P4" loading="lazy">
+                    <figcaption><b>NDCI</b>Clorofila y pigmentos<code>(RE − R) / (RE + R)</code></figcaption>
+                </figure>
+                <figure class="tile">
+                    <img src="assets/img/huasco/tile_ndwi.webp" alt="NDWI del sitio P4" loading="lazy">
+                    <figcaption><b>NDWI</b>Agua superficial<code>(G − NIR) / (G + NIR)</code></figcaption>
+                </figure>
+                <figure class="tile">
+                    <img src="assets/img/huasco/tile_lst.webp" alt="Temperatura de superficie del sitio P4" loading="lazy">
+                    <figcaption><b>LST</b>Temperatura de superficie<code>Infrarrojo térmico, °C</code></figcaption>
+                </figure>
+            </div>
+            <p class="caption">Detalle del sitio P4, vuelo del 27 de enero de 2026.</p>
         </div>
-    </div>
+    </section>
+
+    <section class="about">
+        <div class="wrap">
+            <div class="section-head">
+                <h2>Microbios, gases y paisaje</h2>
+                <p>
+                    Un acercamiento visual al Salar de Huasco dentro del sitio web del Anillo MESS,
+                    pensado para compartir resultados con comunidad, estudiantes y equipos colaboradores.
+                </p>
+            </div>
+            <div class="chapters">
+                <article class="chapter">
+                    <span class="num">01</span>
+                    <div>
+                        <h3>¿De qué se trata el Anillo MESS?</h3>
+                        <span>Microbial Ecosystem Services of Salares</span>
+                    </div>
+                    <div>
+                        <p>
+                            El proyecto <strong>MESS</strong> reúne a equipos de varias universidades para
+                            estudiar los <strong>servicios ecosistémicos microbianos</strong> en los salares
+                            del norte de Chile: su diversidad, su papel en los ciclos de nutrientes y gases
+                            de efecto invernadero, y su valor para la sociedad.
+                        </p>
+                        <p>
+                            Esta página es una <strong>base preliminar de difusión</strong> de ese trabajo.
+                        </p>
+                    </div>
+                </article>
+                <article class="chapter">
+                    <span class="num">02</span>
+                    <div>
+                        <h3>Objetivo específico 2 y este mapa</h3>
+                    </div>
+                    <div>
+                        <p>
+                            El <strong>objetivo específico 2</strong> aborda los <strong>ciclos biogeoquímicos
+                            y el cambio climático</strong>: comprender cómo las comunidades microbianas participan
+                            en el intercambio de gases y en la dinámica del salar, desde la escala del suelo
+                            hasta paisajes enteros.
+                        </p>
+                        <p>
+                            Aquí mostramos un avance con <strong>vuelos de dron</strong> en los sitios
+                            <strong>P2–P7</strong> del salar (incluido <strong>P7 / H3</strong>): una mirada
+                            mucho más detallada que la de los satélites habituales.
+                        </p>
+                    </div>
+                </article>
+                <article class="chapter">
+                    <span class="num">03</span>
+                    <div>
+                        <h3>Qué puedes explorar</h3>
+                    </div>
+                    <div>
+                        <p>
+                            En el mapa interactivo puedes recorrer el polígono de cada vuelo, cambiar entre
+                            <strong>color natural</strong>, <strong>vegetación</strong>, <strong>clorofila</strong>,
+                            <strong>agua superficial</strong> y <strong>temperatura</strong>, y ajustar la
+                            transparencia para comparar capas sobre la foto base.
+                        </p>
+                        <p>
+                            Es un resultado en construcción: el sitio P1 se incorporará cuando estén listos
+                            sus datos georreferenciados, y no todos los vuelos tienen todas las capas
+                            (por ejemplo, P5 no tiene registro térmico).
+                        </p>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-band">
+        <div class="wrap">
+            <h2>Recorre el salar capa por capa</h2>
+            <p>Seis sitios de vuelo y un control de transparencia para comparar lo que vemos con lo que mide el sensor.</p>
+            <a class="btn" href="explorador.html">Entrar al mapa interactivo</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="wrap">
+            <nav class="logos" aria-label="Instituciones participantes">
+                <a href="https://www.uantof.cl/" target="_blank" rel="noopener noreferrer" title="Universidad de Antofagasta">
+                    <img class="logo-ua" src="assets/img/uantof_logo.svg" alt="Universidad de Antofagasta">
+                </a>
+                <a href="https://www.upla.cl/" target="_blank" rel="noopener noreferrer" title="Universidad de Playa Ancha">
+                    <img src="assets/img/upla_logo.png" alt="Universidad de Playa Ancha">
+                </a>
+                <a href="https://hubambientalupla.cl/" target="_blank" rel="noopener noreferrer" title="HUB Ambiental UPLA">
+                    <img src="assets/img/hub_logo.png" alt="HUB Ambiental Universidad de Playa Ancha">
+                </a>
+                <a href="https://teleamb.cl/" target="_blank" rel="noopener noreferrer" title="Laboratorio TeleAmb">
+                    <img src="assets/img/teleamb_logo.png" alt="Laboratorio TeleAmb">
+                </a>
+            </nav>
+            <p class="footnote">Proyecto Anillo MESS · Resultados preliminares, 2026</p>
+        </div>
+    </footer>
 </body>
 </html>

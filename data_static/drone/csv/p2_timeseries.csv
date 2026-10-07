@@ -1,0 +1,5 @@
+source,wetland_id,wetland_name,index,date,year,season,period_key,mean
+drone,p2,Sitio P2,NDVI,2026-01-26,2026,26 Jan 2026,20260126,0.2413
+drone,p2,Sitio P2,NDCI,2026-01-26,2026,26 Jan 2026,20260126,0.2847
+drone,p2,Sitio P2,NDWI,2026-01-26,2026,26 Jan 2026,20260126,0.0852
+drone,p2,Sitio P2,LST,2026-01-26,2026,26 Jan 2026,20260126,0.0

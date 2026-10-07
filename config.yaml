@@ -9,13 +9,9 @@ year_start: 2026
 year_end: auto
 
 wetlands:
-  p1:
-    name: "Sitio P1"
-    aoi_source: &sitios "data/huasco/vector/sitios_huasco.gpkg"
-    site_code: "P1"
   p2:
     name: "Sitio P2"
-    aoi_source: *sitios
+    aoi_source: &sitios "data/vector/sitios_huasco.gpkg"
     site_code: "P2"
   p3:
     name: "Sitio P3"
@@ -41,8 +37,8 @@ wetlands:
 sources:
   drone:
     label: "Dron multiespectral"
-    description: "Ortofotos e índices del vuelo en sitio P7 (H3)."
-    input_root: "data/drone"
+    description: "Ortofotos e índices de vuelos de dron en sitios P2–P7 del Salar de Huasco."
+    input_root: "data/drone_raster"
     legacy_input_roots: []
     static_root: "data_static/drone"
     enabled: true
@@ -60,11 +56,17 @@ raster_visualization:
   clip_aoi_buffer_m: 0
   rgb_webp_quality: 92
   webp_quality_analytic: 93
-  index_preview_max_size: 5500
-  rgb_max_size: 5500
+  index_preview_max_size: 9000
+  rgb_max_size: 9000
   rgb_upscale_factor: 1
-  rgb_quantize_colors: 128
+  rgb_quantize_colors: 0
   rgb_stretch_percentiles: [2, 98]
+  rgb_gamma: 0.9
+  rgb_contrast: 1.08
+  rgb_saturation: 1.18
+  rgb_unsharp_percent: 45
+  index_stretch_percentiles: [2, 98]
+  preview_style_revision: 2
   rgb_context_buffer_m: 0
   rgb_leaflet_opacity: 1.0
   rgb_use_source_alpha_band: false

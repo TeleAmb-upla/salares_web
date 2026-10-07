@@ -6,20 +6,22 @@
     <title>Salar de Huasco · Mapa dron</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;1,9..144,300;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <style>
         :root {
-            --moss: #4a5d3f;
-            --moss-light: #6b7f5c;
-            --brick: #b54a32;
-            --brick-deep: #8f3828;
-            --orange: #d97a2e;
-            --pale: #f5e6b8;
-            --sand: #faf6ee;
-            --ink: #2a2620;
-            --muted: #5c564c;
-            --panel-w: clamp(300px, 30vw, 380px);
+            --night: #0f1417;
+            --night-2: #172026;
+            --glass: rgba(15, 20, 23, 0.9);
+            --line: rgba(243, 239, 230, 0.12);
+            --salt: #f3efe6;
+            --salt-dim: #b9b3a6;
+            --flamingo: #e47a83;
+            --lagoon: #3aa39a;
+            --ochre: #d39a45;
+            --serif: 'Fraunces', Georgia, serif;
+            --mono: 'IBM Plex Mono', ui-monospace, monospace;
+            --panel-w: clamp(300px, 28vw, 370px);
             --map-chrome-inset-left: calc(var(--panel-w) + 28px);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,15 +29,16 @@
         body {
             font-family: 'DM Sans', system-ui, sans-serif;
             font-size: 15px;
-            color: var(--ink);
-            background: #1a1814;
+            color: var(--salt);
+            background: var(--night);
+            -webkit-font-smoothing: antialiased;
         }
         .app {
             position: relative;
             width: 100%;
             height: 100dvh;
             overflow: hidden;
-            background: #141210;
+            background: var(--night);
         }
         .panel {
             position: absolute;
@@ -48,169 +51,162 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            background: linear-gradient(175deg, rgba(250, 246, 238, 0.97) 0%, #efe6d4 38%, #e5d9c4 100%);
-            border: 1px solid rgba(74, 93, 63, 0.14);
-            border-radius: 22px;
-            box-shadow: 0 12px 48px rgba(42, 38, 32, 0.2);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: var(--glass);
+            border-radius: 3px;
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
         }
         .panel-head {
-            padding: 1.15rem 1.3rem 1rem;
-            border-bottom: 1px solid rgba(181, 74, 50, 0.1);
-            background: linear-gradient(135deg, rgba(245, 230, 184, 0.45) 0%, transparent 70%);
-        }
-        .panel-head .kicker {
-            font-size: 0.66rem;
-            font-weight: 700;
-            letter-spacing: 0.13em;
-            text-transform: uppercase;
-            color: var(--moss);
-        }
-        .panel-head h1 {
-            font-family: 'Fraunces', Georgia, serif;
-            font-size: clamp(1.55rem, 3.2vw, 2rem);
-            font-weight: 700;
-            line-height: 1.1;
-            margin-top: 0.3rem;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-            background: linear-gradient(120deg, var(--brick-deep), var(--orange));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-        }
-        .panel-head .sub {
-            font-size: 0.82rem;
-            color: var(--muted);
-            margin-top: 0.35rem;
-            line-height: 1.4;
+            padding: 1.2rem 1.35rem 1.1rem;
+            border-bottom: 1px solid var(--line);
         }
         a.back {
             display: inline-block;
-            margin-top: 0.55rem;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--moss);
+            font-size: 0.82rem;
+            color: var(--salt-dim);
             text-decoration: none;
         }
-        a.back:hover { color: var(--brick); text-decoration: underline; }
+        a.back:hover { color: var(--salt); }
+        .panel-head h1 {
+            font-family: var(--serif);
+            font-size: clamp(1.7rem, 2.8vw, 2.1rem);
+            font-weight: 300;
+            line-height: 1.05;
+            margin-top: 0.7rem;
+            color: var(--salt);
+        }
+        .panel-head .sub {
+            font-size: 0.84rem;
+            color: var(--salt-dim);
+            margin-top: 0.4rem;
+            line-height: 1.5;
+        }
         .panel-body {
             flex: 1;
             overflow-y: auto;
-            padding: 1rem 1.2rem 1.3rem;
+            padding: 1.1rem 1.35rem 1.4rem;
             display: flex;
             flex-direction: column;
-            gap: 0.95rem;
+            gap: 1.3rem;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(243, 239, 230, 0.25) transparent;
         }
         .block {
-            background: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.95);
-            border-radius: 18px;
-            padding: 1rem 1.05rem;
-            box-shadow: 0 4px 18px rgba(42, 38, 32, 0.04);
+            padding: 0;
+            background: none;
+            border: 0;
         }
         .block label, .block .block-title {
             display: block;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--moss);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--salt-dim);
             margin-bottom: 0.5rem;
         }
         select {
             width: 100%;
-            padding: 0.58rem 0.7rem;
-            border-radius: 12px;
-            border: 1px solid rgba(74, 93, 63, 0.2);
-            background: #fff;
+            padding: 0.6rem 0.7rem;
+            border-radius: 2px;
+            border: 1px solid rgba(243, 239, 230, 0.22);
+            background: rgba(243, 239, 230, 0.05);
             font: inherit;
-            color: var(--ink);
+            font-size: 1rem;
+            color: var(--salt);
+            cursor: pointer;
         }
-        select:focus {
-            outline: 2px solid rgba(217, 122, 46, 0.35);
-            border-color: var(--orange);
-        }
+        select option { color: #1d2124; background: #f3efe6; }
+        select:focus { outline: 1px solid var(--salt-dim); }
         .layer-pills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+            gap: 4px;
         }
         .pill {
-            padding: 0.4rem 0.72rem;
-            border-radius: 999px;
-            border: 1.5px solid rgba(74, 93, 63, 0.22);
-            background: #fff;
-            font-size: 0.78rem;
-            font-weight: 600;
+            padding: 0.5rem 0.4rem;
+            border-radius: 2px;
+            border: 1px solid rgba(243, 239, 230, 0.2);
+            background: transparent;
+            font: inherit;
+            font-size: 0.82rem;
+            font-weight: 500;
             cursor: pointer;
-            color: var(--moss);
-            transition: all 0.12s ease;
+            color: var(--salt);
         }
-        .pill:hover {
-            border-color: var(--orange);
-            color: var(--brick);
-        }
+        .pill:hover { border-color: rgba(243, 239, 230, 0.5); }
         .pill.active {
-            background: linear-gradient(135deg, var(--brick), var(--orange));
-            border-color: transparent;
-            color: #fff;
-            box-shadow: 0 4px 14px rgba(181, 74, 50, 0.3);
+            background: var(--salt);
+            border-color: var(--salt);
+            color: var(--night);
         }
         .hint {
-            font-size: 0.8rem;
-            color: var(--muted);
+            font-size: 0.78rem;
+            color: var(--salt-dim);
             line-height: 1.45;
-            margin-top: 0.4rem;
+            margin-top: 0.55rem;
         }
-        .index-desc {
-            margin-top: 0.7rem;
-            padding: 0.8rem 0.9rem 0.85rem;
-            border-radius: 14px;
-            background: linear-gradient(145deg, rgba(245, 230, 184, 0.42) 0%, rgba(255, 255, 255, 0.72) 55%, rgba(255, 255, 255, 0.5) 100%);
-            border: 1px solid rgba(181, 74, 50, 0.14);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
-        }
+        .index-desc { margin-top: 1rem; }
         .index-desc__label {
             display: block;
-            font-size: 0.68rem;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--brick-deep);
+            font-family: var(--serif);
+            font-size: 1.15rem;
+            font-weight: 400;
+            color: var(--salt);
             line-height: 1.2;
         }
         .index-desc__text {
-            margin-top: 0.4rem;
-            font-size: 0.81rem;
-            line-height: 1.55;
-            color: var(--muted);
+            margin-top: 0.35rem;
+            font-size: 0.86rem;
+            line-height: 1.6;
+            color: var(--salt-dim);
         }
         #loadHint {
-            padding: 0.65rem 0.85rem;
-            border-radius: 12px;
-            background: rgba(181, 74, 50, 0.1);
-            color: var(--brick-deep);
-            font-size: 0.82rem;
-            border-left: 3px solid var(--brick);
+            padding: 0.7rem 0.85rem;
+            border-radius: 2px;
+            background: rgba(201, 84, 95, 0.15);
+            color: var(--salt);
+            font-size: 0.84rem;
         }
         #loadHint[hidden] { display: none; }
         .map-stage { position: absolute; inset: 0; z-index: 0; }
-        #mapa { position: absolute; inset: 0; background: #141210; }
-        .leaflet-container { font-family: inherit; background: #141210; }
-        .leaflet-control-zoom { border: none !important; border-radius: 12px !important; overflow: hidden; }
+        #mapa { position: absolute; inset: 0; background: var(--night); }
+        .leaflet-container { font-family: inherit; background: var(--night); }
+        .leaflet-bar, .leaflet-control-layers {
+            border: 0 !important;
+            border-radius: 2px !important;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3) !important;
+        }
+        .leaflet-bar a, .leaflet-bar a:hover {
+            background: var(--glass);
+            color: var(--salt);
+            border-bottom-color: var(--line);
+        }
+        .leaflet-bar a:hover { background: var(--night-2); }
+        .leaflet-control-layers { background: var(--glass); color: var(--salt); }
+        .leaflet-control-scale-line {
+            background: rgba(15, 20, 23, 0.7);
+            color: var(--salt);
+            border-color: var(--salt-dim);
+            font-family: var(--mono);
+            font-size: 0.66rem;
+        }
+        .leaflet-control-attribution {
+            background: rgba(15, 20, 23, 0.6) !important;
+            color: var(--salt-dim);
+            font-family: var(--mono);
+            font-size: 0.6rem;
+        }
+        .leaflet-control-attribution a { color: var(--salt); }
         .map-note {
             position: absolute;
-            bottom: 12px;
+            bottom: 14px;
             left: 50%;
             transform: translateX(-50%);
             z-index: 800;
             padding: 0.45rem 1rem;
-            border-radius: 999px;
-            background: rgba(42, 38, 32, 0.88);
-            color: var(--pale);
-            font-size: 0.78rem;
+            border-radius: 2px;
+            background: var(--glass);
+            color: var(--salt);
+            font-size: 0.8rem;
             pointer-events: none;
             max-width: 92%;
             text-align: center;
@@ -227,19 +223,18 @@
         .legend-rail--left { left: max(14px, var(--map-chrome-inset-left)); }
         .legend-rail--right { right: 14px; }
         .map-legend-dock {
-            background: rgba(250, 246, 238, 0.96);
-            border-radius: 14px;
-            padding: 10px 12px;
-            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
-            border: 1px solid rgba(255, 255, 255, 0.9);
+            background: var(--glass);
+            border-radius: 2px;
+            padding: 12px 12px 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
-        #colorbarBox { display: none; min-width: 72px; }
+        #colorbarBox { display: none; min-width: 74px; }
         #colorbarBox.visible { display: block; }
         .colorbar-title {
-            font-size: 0.78rem;
-            font-weight: 700;
+            font-size: 0.85rem;
+            font-weight: 500;
             text-align: center;
-            color: var(--moss);
+            color: var(--salt);
             margin-bottom: 8px;
         }
         .colorbar-scale {
@@ -250,19 +245,19 @@
         }
         .colorbar-gradient-wrap {
             position: relative;
-            width: 26px;
-            height: 168px;
+            width: 18px;
+            height: 180px;
         }
         .colorbar-gradient {
             width: 100%;
             height: 100%;
-            border-radius: 8px;
-            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+            border-radius: 2px;
+            box-shadow: 0 0 0 1px rgba(243, 239, 230, 0.2);
         }
         .colorbar-value {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--muted);
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--salt);
             font-variant-numeric: tabular-nums;
         }
         .colorbar-value--center {
@@ -271,29 +266,26 @@
             top: 50%;
             transform: translateY(-50%);
             white-space: nowrap;
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--brick);
+            color: var(--salt-dim);
         }
         .drone-opacity {
             display: flex;
             flex-direction: column;
             align-items: stretch;
             gap: 6px;
-            width: 6rem;
+            width: 6.6rem;
         }
         .drone-opacity[hidden] { display: none !important; }
         .drone-opacity-title {
-            font-size: 0.66rem;
-            font-weight: 700;
-            color: var(--moss);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--salt);
             text-align: center;
             line-height: 1.15;
         }
         .drone-opacity-sub {
-            font-size: 0.6rem;
-            font-weight: 600;
-            color: var(--muted);
+            font-size: 0.68rem;
+            color: var(--salt-dim);
             text-align: center;
         }
         .drone-opacity-scale {
@@ -303,9 +295,9 @@
             gap: 5px;
         }
         .drone-opacity-value {
-            font-size: 0.72rem;
-            font-weight: 700;
-            color: var(--ink);
+            font-family: var(--mono);
+            font-size: 0.7rem;
+            color: var(--salt);
             font-variant-numeric: tabular-nums;
         }
         .drone-opacity-slider-wrap {
@@ -321,24 +313,41 @@
             margin: 0;
             transform: rotate(-90deg);
             cursor: pointer;
-            accent-color: var(--brick);
+            accent-color: var(--flamingo);
             -webkit-appearance: none;
             appearance: none;
             background: transparent;
         }
         .drone-opacity input[type="range"]::-webkit-slider-runnable-track {
-            height: 7px;
+            height: 3px;
             border-radius: 999px;
-            background: rgba(74, 93, 63, 0.2);
+            background: rgba(243, 239, 230, 0.25);
         }
         .drone-opacity input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
-            background: var(--brick);
-            border: 2px solid #fff;
-            margin-top: -5px;
+            background: var(--salt);
+            border: 0;
+            margin-top: -6.5px;
+        }
+        .drone-opacity input[type="range"]::-moz-range-track {
+            height: 3px;
+            background: rgba(243, 239, 230, 0.25);
+        }
+        .drone-opacity input[type="range"]::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--salt);
+            border: 0;
+        }
+        /* Suavizado fotográfico al escalar la ortofoto; crisp-edges pixelaba el TIFF. */
+        .leaflet-image-layer,
+        .leaflet-image-layer.raster-crisp {
+            image-rendering: auto;
+            image-rendering: high-quality;
         }
         @media (max-width: 720px) {
             :root { --map-chrome-inset-left: 14px; }
@@ -387,10 +396,9 @@
         <div class="map-note" id="mapNote">Cargando…</div>
         <aside class="panel" aria-label="Controles del mapa">
             <header class="panel-head">
-                <p class="kicker">Anillo MESS · OE2</p>
+                <a class="back" href="index.html">← Inicio</a>
                 <h1>Salar de Huasco</h1>
-                <p class="sub">Mapa preliminar con vuelo de dron · sitio P7 (H3)</p>
-                <a class="back" href="index.html">← Volver al inicio</a>
+                <p class="sub">Vuelos de dron multiespectral en los sitios P2–P7</p>
             </header>
             <div class="panel-body">
                 <div id="loadHint" hidden></div>
@@ -441,16 +449,29 @@ function isIndexLayer(kind) {
     return INDEX_LAYERS.indexOf(String(kind).toLowerCase()) >= 0;
 }
 
-function legendLimits(idxMeta) {
+function formatLegendValue(value) {
+    const n = Number(value);
+    if (!isFinite(n)) return '';
+    if (Math.abs(n) >= 10) return String(Math.round(n));
+    return (Math.round(n * 100) / 100).toFixed(2);
+}
+
+function legendLimits(idxMeta, raster) {
     if (!idxMeta) return { min: '', max: '', center: null, diverging: false };
-    const vmin = Number(idxMeta.vmin);
-    const vmax = Number(idxMeta.vmax);
-    const diverging = idxMeta.diverging === true;
-    if (!diverging || !isFinite(vmin) || !isFinite(vmax)) {
+    const visual = raster && raster.visual;
+    const vmin = visual && visual.vmin != null ? Number(visual.vmin) : Number(idxMeta.vmin);
+    const vmax = visual && visual.vmax != null ? Number(visual.vmax) : Number(idxMeta.vmax);
+    if (!isFinite(vmin) || !isFinite(vmax)) {
         return { min: idxMeta.vmin, max: idxMeta.vmax, center: null, diverging: false };
     }
-    const lim = Math.max(Math.abs(vmin), Math.abs(vmax));
-    return { min: -lim, max: lim, center: 0, diverging: true };
+    const crossesZero = vmin < 0 && vmax > 0;
+    const span = Math.max(Math.abs(vmin), Math.abs(vmax), 1e-6);
+    const symmetric = idxMeta.diverging === true && crossesZero && Math.abs(vmin + vmax) <= 0.08 * span;
+    if (symmetric) {
+        const lim = Math.max(Math.abs(vmin), Math.abs(vmax));
+        return { min: formatLegendValue(-lim), max: formatLegendValue(lim), center: 0, diverging: true };
+    }
+    return { min: formatLegendValue(vmin), max: formatLegendValue(vmax), center: null, diverging: false };
 }
 
 function resetIndexOpacityToFull() {
@@ -467,12 +488,13 @@ function initMap() {
         zoom: 14,
         zoomControl: false,
         maxZoom: 22,
+        zoomSnap: 0.25,
         wheelPxPerZoomLevel: 160,
     });
     L.control.zoom({ position: 'topright' }).addTo(mapa);
     L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(mapa);
     const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: '© Esri', maxZoom: 22, maxNativeZoom: 19,
+        attribution: '© Esri', maxZoom: 22, maxNativeZoom: 17,
     });
     const topo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
         attribution: '© Esri', maxZoom: 22,
@@ -525,6 +547,7 @@ function buildLayerPills() {
     box.innerHTML = '';
     LAYER_ORDER.forEach(function (key) {
         if (!indices[key]) return;
+        if (state.selectedWetland && !findLatestPeriodKey(state.selectedWetland, key)) return;
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'pill' + (state.mapLayerKind === key ? ' active' : '');
@@ -592,16 +615,16 @@ function buildWetlandSelect() {
         const i = wetlands[w] || {};
         return i.status === 'ready' || (i.n_periods || 0) > 0;
     });
-    if (ready.indexOf('p7') >= 0) state.selectedWetland = 'p7';
-    else if (ready.indexOf(state.selectedWetland) < 0) {
+    if (ready.indexOf(state.selectedWetland) < 0) {
         state.selectedWetland = ready[0] || keys[0];
     }
     sel.value = state.selectedWetland;
     sel.onchange = function () {
         state.selectedWetland = sel.value;
-        state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, state.mapLayerKind);
+        state.mapLayerKind = 'rgb';
+        state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, 'rgb');
+        buildLayerPills();
         state.fitBoundsOnSiteChange = true;
-        if (isIndexLayer(state.mapLayerKind)) resetIndexOpacityToFull();
         updateIndexDescription();
         updateLayerHint();
         renderAOI();
@@ -619,7 +642,7 @@ function renderAOI() {
             const wid = String(f.properties[idCol] || '').toLowerCase();
             const active = wid === state.selectedWetland;
             return {
-                color: active ? '#d97a2e' : '#6b7f5c',
+                color: active ? '#e47a83' : '#f3efe6',
                 weight: active ? 3 : 2,
                 fillOpacity: 0,
                 dashArray: active ? '' : '5 4',
@@ -638,15 +661,28 @@ function boundsValid(b) {
     return Math.abs(b[0][0]) <= 90 && Math.abs(b[1][0]) <= 90;
 }
 
+function fitOptions() {
+    const panel = document.querySelector('.panel');
+    const gap = 40;
+    if (!panel) return { padding: [gap, gap] };
+    if (window.innerWidth <= 720) {
+        return { paddingTopLeft: [gap, panel.offsetHeight + gap], paddingBottomRight: [gap, gap] };
+    }
+    return { paddingTopLeft: [panel.offsetWidth + 12 + gap, gap], paddingBottomRight: [gap, gap] };
+}
+
 function fitAoi() {
-    if (!state.aoi || !mapa) return;
+    if (!state.aoi || !mapa) return false;
     const idCol = meta().aoi_id_column || 'wetland_id';
     const layer = L.geoJSON(state.aoi, {
         filter: function (f) {
             return String(f.properties[idCol] || '').toLowerCase() === state.selectedWetland;
         },
     });
-    try { mapa.fitBounds(layer.getBounds(), { padding: [40, 40] }); } catch (e) {}
+    const b = layer.getBounds();
+    if (!b.isValid()) return false;
+    mapa.fitBounds(b, fitOptions());
+    return true;
 }
 
 function updateColorbar(kind) {
@@ -656,7 +692,8 @@ function updateColorbar(kind) {
         cbar.classList.remove('visible');
         return;
     }
-    const lim = legendLimits(idxMeta);
+    const raster = getRaster(state.selectedWetland, state.mapPeriodKey, kind);
+    const lim = legendLimits(idxMeta, raster);
     const gradient = idxMeta.legend_gradient || 'linear-gradient(to top, #666, #eee)';
     document.getElementById('cbGradient').style.background = gradient;
     document.getElementById('cbTitle').textContent = idxMeta.label || kind.toUpperCase();
@@ -675,9 +712,11 @@ function updateColorbar(kind) {
 function addImageOverlay(raster, opacity) {
     const corners = raster.visual.bounds;
     if (!boundsValid(corners)) return null;
+    const renderMode = (raster.visual.render_mode || 'smooth').toLowerCase();
     const ly = L.imageOverlay(BASE + '/' + raster.visual.path, corners, {
         opacity: opacity,
         interactive: false,
+        className: renderMode === 'crisp' ? 'raster-crisp' : '',
     });
     ly.addTo(mapa);
     return ly;
@@ -697,7 +736,7 @@ function updateMapOverlay(doFitBounds) {
     if (!state.mapPeriodKey) {
         const info = (meta().wetlands || {})[state.selectedWetland] || {};
         note.textContent = (info.n_periods || 0) === 0
-            ? 'Este sitio aún no tiene mapas (por ahora solo P7).'
+            ? 'Este sitio aún no tiene mapas de dron.'
             : 'Sin capa para este sitio.';
         if (doFitBounds || state.fitBoundsOnSiteChange) {
             fitAoi();
@@ -740,10 +779,8 @@ function updateMapOverlay(doFitBounds) {
     }
 
     if (doFitBounds || state.fitBoundsOnSiteChange) {
-        if (boundsValid(fitBounds)) {
-            mapa.fitBounds(fitBounds, { padding: [36, 36] });
-        } else {
-            fitAoi();
+        if (!fitAoi() && boundsValid(fitBounds)) {
+            mapa.fitBounds(fitBounds, fitOptions());
         }
         state.fitBoundsOnSiteChange = false;
     }

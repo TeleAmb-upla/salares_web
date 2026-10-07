@@ -1,4 +1,4 @@
-"""Construye ``data/huasco/vector/sitios_huasco.gpkg`` desde los KMZ de vuelo."""
+"""Construye ``data/vector/sitios_huasco.gpkg`` desde los KMZ de vuelo."""
 from __future__ import annotations
 
 import os
@@ -7,8 +7,8 @@ from pathlib import Path
 import geopandas as gpd
 
 REPO = Path(__file__).resolve().parent.parent
-KMZ_DIR = REPO / "data" / "huasco" / "vector" / "huasco_kml"
-OUT = REPO / "data" / "huasco" / "vector" / "sitios_huasco.gpkg"
+KMZ_DIR = REPO / "data" / "vector" / "huasco_kml"
+OUT = REPO / "data" / "vector" / "sitios_huasco.gpkg"
 
 
 def main() -> None:
@@ -16,7 +16,7 @@ def main() -> None:
     frames = []
     for kmz in sorted(KMZ_DIR.glob("HuascoP*.kmz")):
         code = kmz.stem.replace("Huasco", "").upper()
-        gdf = gpd.read_file(kmz)
+        gdf = gpd.read_file(kmz, on_invalid="fix")
         if gdf.crs is None:
             gdf = gdf.set_crs("EPSG:4326")
         gdf = gdf.to_crs("EPSG:4326")

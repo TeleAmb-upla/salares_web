@@ -2,65 +2,10 @@
   "source": {
     "id": "drone",
     "label": "Dron multiespectral",
-    "description": "Ortofotos e índices del vuelo en sitio P7 (H3).",
+    "description": "Ortofotos e índices de vuelos de dron en sitios P2–P7 del Salar de Huasco.",
     "has_data": true
   },
   "wetlands": {
-    "p1": {
-      "name": "Sitio P1",
-      "indices": {
-        "rgb": {
-          "points": [],
-          "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
-            "annual_summary": [],
-            "trend": null
-          }
-        },
-        "ndvi": {
-          "points": [],
-          "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
-            "annual_summary": [],
-            "trend": null
-          }
-        },
-        "ndci": {
-          "points": [],
-          "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
-            "annual_summary": [],
-            "trend": null
-          }
-        },
-        "ndwi": {
-          "points": [],
-          "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
-            "annual_summary": [],
-            "trend": null
-          }
-        },
-        "lst": {
-          "points": [],
-          "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
-            "annual_summary": [],
-            "trend": null
-          }
-        }
-      }
-    },
     "p2": {
       "name": "Sitio P2",
       "indices": {
@@ -75,41 +20,153 @@
           }
         },
         "ndvi": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "period_key": "20260126",
+              "value": 0.2413
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "value": 0.2413,
+              "historical_mean": 0.2413,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": 0.0,
+              "seasonal_mean": 0.2413,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": 0.0
+            },
+            "historical_mean": 0.2413,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "26 Jan 2026",
+                "mean": 0.2413
+              }
+            },
             "annual_summary": [],
             "trend": null
           }
         },
         "ndci": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "period_key": "20260126",
+              "value": 0.2847
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "value": 0.2847,
+              "historical_mean": 0.2847,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": 0.0,
+              "seasonal_mean": 0.2847,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": 0.0
+            },
+            "historical_mean": 0.2847,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "26 Jan 2026",
+                "mean": 0.2847
+              }
+            },
             "annual_summary": [],
             "trend": null
           }
         },
         "ndwi": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "period_key": "20260126",
+              "value": 0.0852
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "value": 0.0852,
+              "historical_mean": 0.0852,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": 0.0,
+              "seasonal_mean": 0.0852,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": 0.0
+            },
+            "historical_mean": 0.0852,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "26 Jan 2026",
+                "mean": 0.0852
+              }
+            },
             "annual_summary": [],
             "trend": null
           }
         },
         "lst": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "period_key": "20260126",
+              "value": 0.0
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "value": 0.0,
+              "historical_mean": 0.0,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": null,
+              "seasonal_mean": 0.0,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": null
+            },
+            "historical_mean": 0.0,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "26 Jan 2026",
+                "mean": 0.0
+              }
+            },
             "annual_summary": [],
             "trend": null
           }
@@ -130,11 +187,39 @@
           }
         },
         "ndvi": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "period_key": "20260126",
+              "value": 0.2531
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "value": 0.2531,
+              "historical_mean": 0.2531,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": 0.0,
+              "seasonal_mean": 0.2531,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": 0.0
+            },
+            "historical_mean": 0.2531,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "26 Jan 2026",
+                "mean": 0.2531
+              }
+            },
             "annual_summary": [],
             "trend": null
           }
@@ -160,11 +245,39 @@
           }
         },
         "lst": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "period_key": "20260126",
+              "value": 0.0
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-26",
+              "label": "26 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "26 Jan 2026",
+              "value": 0.0,
+              "historical_mean": 0.0,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": null,
+              "seasonal_mean": 0.0,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": null
+            },
+            "historical_mean": 0.0,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "26 Jan 2026",
+                "mean": 0.0
+              }
+            },
             "annual_summary": [],
             "trend": null
           }
@@ -185,41 +298,153 @@
           }
         },
         "ndvi": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-27",
+              "label": "27 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "27 Jan 2026",
+              "period_key": "20260127",
+              "value": 0.2418
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-27",
+              "label": "27 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "27 Jan 2026",
+              "value": 0.2418,
+              "historical_mean": 0.2418,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": 0.0,
+              "seasonal_mean": 0.2418,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": 0.0
+            },
+            "historical_mean": 0.2418,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "27 Jan 2026",
+                "mean": 0.2418
+              }
+            },
             "annual_summary": [],
             "trend": null
           }
         },
         "ndci": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-27",
+              "label": "27 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "27 Jan 2026",
+              "period_key": "20260127",
+              "value": 0.2768
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-27",
+              "label": "27 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "27 Jan 2026",
+              "value": 0.2768,
+              "historical_mean": 0.2768,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": 0.0,
+              "seasonal_mean": 0.2768,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": 0.0
+            },
+            "historical_mean": 0.2768,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "27 Jan 2026",
+                "mean": 0.2768
+              }
+            },
             "annual_summary": [],
             "trend": null
           }
         },
         "ndwi": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-27",
+              "label": "27 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "27 Jan 2026",
+              "period_key": "20260127",
+              "value": -0.0409
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-27",
+              "label": "27 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "27 Jan 2026",
+              "value": -0.0409,
+              "historical_mean": -0.0409,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": 0.0,
+              "seasonal_mean": -0.0409,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": 0.0
+            },
+            "historical_mean": -0.0409,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "27 Jan 2026",
+                "mean": -0.0409
+              }
+            },
             "annual_summary": [],
             "trend": null
           }
         },
         "lst": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-27",
+              "label": "27 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "27 Jan 2026",
+              "period_key": "20260127",
+              "value": 0.0
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-27",
+              "label": "27 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "27 Jan 2026",
+              "value": 0.0,
+              "historical_mean": 0.0,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": null,
+              "seasonal_mean": 0.0,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": null
+            },
+            "historical_mean": 0.0,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "27 Jan 2026",
+                "mean": 0.0
+              }
+            },
             "annual_summary": [],
             "trend": null
           }
@@ -240,11 +465,39 @@
           }
         },
         "ndvi": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-28",
+              "label": "28 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "28 Jan 2026",
+              "period_key": "20260128",
+              "value": 0.2515
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-28",
+              "label": "28 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "28 Jan 2026",
+              "value": 0.2515,
+              "historical_mean": 0.2515,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": 0.0,
+              "seasonal_mean": 0.2515,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": 0.0
+            },
+            "historical_mean": 0.2515,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "28 Jan 2026",
+                "mean": 0.2515
+              }
+            },
             "annual_summary": [],
             "trend": null
           }
@@ -325,11 +578,39 @@
           }
         },
         "lst": {
-          "points": [],
+          "points": [
+            {
+              "date": "2026-01-28",
+              "label": "28 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "28 Jan 2026",
+              "period_key": "20260128",
+              "value": 0.0
+            }
+          ],
           "metrics": {
-            "latest": null,
-            "historical_mean": null,
-            "seasonal_means": {},
+            "latest": {
+              "date": "2026-01-28",
+              "label": "28 Jan 2026",
+              "year": 2026,
+              "season_key": "vuelo",
+              "season_label": "28 Jan 2026",
+              "value": 0.0,
+              "historical_mean": 0.0,
+              "historical_anomaly_abs": 0.0,
+              "historical_anomaly_pct": null,
+              "seasonal_mean": 0.0,
+              "seasonal_anomaly_abs": 0.0,
+              "seasonal_anomaly_pct": null
+            },
+            "historical_mean": 0.0,
+            "seasonal_means": {
+              "vuelo": {
+                "label": "28 Jan 2026",
+                "mean": 0.0
+              }
+            },
             "annual_summary": [],
             "trend": null
           }

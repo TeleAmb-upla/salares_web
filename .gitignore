@@ -3,9 +3,11 @@ data/huasco/raster/**/*.tif
 data/huasco/raster/**/*.tif.ovr
 data/drone/*.tif
 data/drone/**/*.tif
+data/drone_raster/
 
 # Documentos internos (no servir en la web pública)
 data/huasco/documents/
+data/documents/
 
 # Python
 __pycache__/
@@ -17,3 +19,4 @@ venv/
 .DS_Store
 Thumbs.db
 desktop.ini
+.vscode/
