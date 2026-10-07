@@ -405,7 +405,7 @@
                 <div class="block">
                     <label for="globalWetland">Sitio de vuelo</label>
                     <select id="globalWetland"></select>
-                    <p class="hint" id="siteHint">Recorte al polígono del sitio.</p>
+                    <p class="hint" id="siteHint">También puedes hacer clic en un polígono del mapa.</p>
                 </div>
                 <div class="block">
                     <span class="block-title">Capa espectral</span>
@@ -589,14 +589,22 @@ function updateLayerHint() {
         el.hidden = false;
         return;
     }
+    const date = formatFlightDate(state.mapPeriodKey);
     if (isIndexLayer(state.mapLayerKind)) {
-        el.textContent = 'Ajusta la transparencia para ver la foto RGB debajo.';
-        el.hidden = false;
-        return;
+        el.textContent = 'Vuelo del ' + date + '. Usa el control de transparencia (a la derecha del mapa) para ver la foto a color debajo.';
+    } else {
+        el.textContent = 'Vuelo del ' + date + '.';
     }
-    const p = (meta().periods || []).find(function (x) { return x.key === state.mapPeriodKey; });
-    el.textContent = p ? ('Vuelo · ' + p.label) : '';
-    el.hidden = !el.textContent;
+    el.hidden = false;
+}
+
+const MONTHS_ES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto',
+    'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+function formatFlightDate(periodKey) {
+    const m = /^(\d{4})(\d{2})(\d{2})/.exec(String(periodKey || ''));
+    if (!m) return String(periodKey || '');
+    return Number(m[3]) + ' de ' + MONTHS_ES[Number(m[2]) - 1] + ' de ' + m[1];
 }
 
 function buildWetlandSelect() {
@@ -784,7 +792,7 @@ function updateMapOverlay(doFitBounds) {
             ' sobre RGB · transparencia ' + Math.round(op * 100) + '%';
     } else {
         rasterOverlay = addImageOverlay(raster, 1);
-        note.textContent = 'Foto a color · ' + (raster.season || '');
+        note.textContent = 'Foto a color · ' + formatFlightDate(period);
     }
 
     if (doFitBounds || state.fitBoundsOnSiteChange) {
@@ -810,6 +818,11 @@ async function loadAll() {
         return;
     }
     hint.hidden = true;
+    const params = new URLSearchParams(location.search);
+    const askedSite = String(params.get('sitio') || '').toLowerCase();
+    const askedLayer = String(params.get('capa') || '').toLowerCase();
+    if (askedSite && (meta().wetlands || {})[askedSite]) state.selectedWetland = askedSite;
+    if (LAYER_ORDER.indexOf(askedLayer) >= 0) state.mapLayerKind = askedLayer;
     buildWetlandSelect();
     buildLayerPills();
     state.mapPeriodKey = findLatestPeriodKey(state.selectedWetland, state.mapLayerKind);

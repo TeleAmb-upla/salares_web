@@ -142,15 +142,29 @@
             grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 1.5rem 12px;
         }
+        .tile a { display: block; color: inherit; text-decoration: none; }
         .tile img {
             display: block;
             width: 100%;
             aspect-ratio: 3 / 4;
             object-fit: cover;
             background: #1a2124;
+            transition: opacity 0.2s ease;
         }
-        .tile figcaption { margin-top: 0.75rem; font-size: 0.9rem; color: var(--salt-dim); }
-        .tile figcaption b { display: block; color: var(--salt); font-weight: 500; font-size: 1rem; }
+        .tile a:hover img, .tile a:focus-visible img { opacity: 0.85; }
+        .tile a:focus-visible { outline: 2px solid var(--salt); outline-offset: 4px; }
+        .tile .open {
+            display: block;
+            margin-top: 0.55rem;
+            font-size: 0.82rem;
+            color: var(--salt);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            text-decoration-color: rgba(243, 239, 230, 0.35);
+        }
+        .tile a:hover .open { text-decoration-color: var(--salt); }
+        .tile-cap { display: block; margin-top: 0.75rem; font-size: 0.9rem; color: var(--salt-dim); }
+        .tile-cap b { display: block; color: var(--salt); font-weight: 500; font-size: 1rem; }
         .tile code {
             display: block;
             margin-top: 0.3rem;
@@ -193,31 +207,75 @@
         .cta-band h2 { max-width: 15ch; }
         .cta-band p { max-width: 30rem; margin: 1.1rem 0 1.8rem; color: rgba(243, 239, 230, 0.82); }
 
-        /* Pie con logos */
-        footer { padding: 3rem 0 2.5rem; }
+        /* Banda de instituciones */
+        .partners {
+            padding: clamp(2.5rem, 5vw, 3.5rem) 0;
+            background: #fff;
+            border-top: 1px solid var(--rule);
+            border-bottom: 1px solid var(--rule);
+        }
+        .partners-inner {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 2rem clamp(2rem, 5vw, 4rem);
+        }
+        .partner-group h2 {
+            font-family: 'DM Sans', system-ui, sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0;
+            color: var(--muted);
+            margin-bottom: 1.1rem;
+        }
+        .partner-group + .partner-group {
+            padding-left: clamp(2rem, 5vw, 4rem);
+            border-left: 1px solid var(--rule);
+        }
         .logos {
             display: flex;
             flex-wrap: wrap;
             align-items: center;
-            justify-content: center;
-            gap: clamp(1.25rem, 4vw, 3rem);
+            justify-content: space-between;
+            gap: 1.5rem clamp(1.75rem, 4vw, 3.25rem);
         }
-        .logos a { display: flex; }
-        .logos img { display: block; height: clamp(44px, 8vw, 58px); width: auto; max-width: 190px; object-fit: contain; }
-        .logos img.logo-ua { height: clamp(40px, 7.5vw, 52px); }
-        .footnote { margin-top: 2rem; text-align: center; font-size: 0.82rem; color: var(--muted); }
+        .logos a { display: flex; border-radius: 2px; }
+        .logos a:focus-visible { outline: 2px solid var(--ink); outline-offset: 6px; }
+        .logos img { display: block; height: 64px; width: auto; max-width: 220px; object-fit: contain; }
+        .logos img.logo-ua { height: 92px; }
+        .logos img.logo-upla { height: 54px; }
+        .logos img.logo-hub { height: 76px; }
+        .logos img.logo-teleamb { height: 74px; }
+        .logos img.logo-anid { height: 104px; }
+
+        footer {
+            padding: 1.6rem 0;
+            font-size: 0.84rem;
+            color: var(--muted);
+        }
+        footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 2rem; }
+        footer a { text-underline-offset: 3px; }
 
         @media (max-width: 980px) {
             .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .section-head { grid-template-columns: 1fr; }
             .chapter { grid-template-columns: 2.5rem minmax(0, 1fr); }
             .chapter > div:last-child { grid-column: 2; }
+            .partners-inner { grid-template-columns: 1fr; }
+            .partner-group + .partner-group { padding-left: 0; border-left: 0; padding-top: 2rem; border-top: 1px solid var(--rule); }
         }
         @media (max-width: 600px) {
             .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .chapter { grid-template-columns: 1fr; }
             .chapter > div:last-child { grid-column: auto; }
             .hero-meta { flex-direction: column; }
+            .logos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; }
+            .partner-group:last-child .logos { grid-template-columns: 1fr; }
+            .logos img.logo-ua { height: 68px; }
+            .logos img.logo-upla { height: 40px; }
+            .logos img.logo-hub { height: 56px; }
+            .logos img.logo-teleamb { height: 54px; }
+            .logos img.logo-anid { height: 80px; }
         }
     </style>
 </head>
@@ -256,28 +314,38 @@
                 </p>
             </div>
             <div class="tiles">
-                <figure class="tile">
-                    <img src="assets/img/huasco/tile_rgb.webp" alt="Ortomosaico en color verdadero del sitio P4" loading="lazy">
-                    <figcaption><b>RGB</b>Color verdadero</figcaption>
-                </figure>
-                <figure class="tile">
-                    <img src="assets/img/huasco/tile_ndvi.webp" alt="NDVI del sitio P4" loading="lazy">
-                    <figcaption><b>NDVI</b>Vigor de la vegetación<code>(NIR − R) / (NIR + R)</code></figcaption>
-                </figure>
-                <figure class="tile">
-                    <img src="assets/img/huasco/tile_ndci.webp" alt="NDCI del sitio P4" loading="lazy">
-                    <figcaption><b>NDCI</b>Clorofila y pigmentos<code>(RE − R) / (RE + R)</code></figcaption>
-                </figure>
-                <figure class="tile">
-                    <img src="assets/img/huasco/tile_ndwi.webp" alt="NDWI del sitio P4" loading="lazy">
-                    <figcaption><b>NDWI</b>Agua superficial<code>(G − NIR) / (G + NIR)</code></figcaption>
-                </figure>
-                <figure class="tile">
-                    <img src="assets/img/huasco/tile_lst.webp" alt="Temperatura de superficie del sitio P4" loading="lazy">
-                    <figcaption><b>LST</b>Temperatura de superficie<code>Infrarrojo térmico, °C</code></figcaption>
-                </figure>
+                <div class="tile">
+                    <a href="explorador.html?sitio=p4&amp;capa=rgb">
+                        <img src="assets/img/huasco/tile_rgb.webp" alt="Ortomosaico en color verdadero del sitio P4" loading="lazy">
+                        <span class="tile-cap"><b>RGB</b>Color verdadero<code>Rojo · Verde · Azul</code><span class="open">Ver en el mapa</span></span>
+                    </a>
+                </div>
+                <div class="tile">
+                    <a href="explorador.html?sitio=p4&amp;capa=ndvi">
+                        <img src="assets/img/huasco/tile_ndvi.webp" alt="NDVI del sitio P4" loading="lazy">
+                        <span class="tile-cap"><b>NDVI</b>Vigor de la vegetación<code>(NIR − R) / (NIR + R)</code><span class="open">Ver en el mapa</span></span>
+                    </a>
+                </div>
+                <div class="tile">
+                    <a href="explorador.html?sitio=p4&amp;capa=ndci">
+                        <img src="assets/img/huasco/tile_ndci.webp" alt="NDCI del sitio P4" loading="lazy">
+                        <span class="tile-cap"><b>NDCI</b>Clorofila y pigmentos<code>(RE − R) / (RE + R)</code><span class="open">Ver en el mapa</span></span>
+                    </a>
+                </div>
+                <div class="tile">
+                    <a href="explorador.html?sitio=p4&amp;capa=ndwi">
+                        <img src="assets/img/huasco/tile_ndwi.webp" alt="NDWI del sitio P4" loading="lazy">
+                        <span class="tile-cap"><b>NDWI</b>Agua superficial<code>(G − NIR) / (G + NIR)</code><span class="open">Ver en el mapa</span></span>
+                    </a>
+                </div>
+                <div class="tile">
+                    <a href="explorador.html?sitio=p4&amp;capa=lst">
+                        <img src="assets/img/huasco/tile_lst.webp" alt="Temperatura de superficie del sitio P4" loading="lazy">
+                        <span class="tile-cap"><b>LST</b>Temperatura de superficie<code>Infrarrojo térmico, °C</code><span class="open">Ver en el mapa</span></span>
+                    </a>
+                </div>
             </div>
-            <p class="caption">Detalle del sitio P4, vuelo del 27 de enero de 2026.</p>
+            <p class="caption">Detalle del sitio P4, vuelo del 27 de enero de 2026. R = rojo, G = verde, RE = borde rojo, NIR = infrarrojo cercano.</p>
         </div>
     </section>
 
@@ -359,23 +427,40 @@
         </div>
     </section>
 
+    <section class="partners" aria-label="Instituciones">
+        <div class="wrap partners-inner">
+            <div class="partner-group">
+                <h2>Instituciones participantes</h2>
+                <nav class="logos">
+                    <a href="https://www.uantof.cl/" target="_blank" rel="noopener noreferrer" title="Universidad de Antofagasta">
+                        <img class="logo-ua" src="assets/img/uantof_logo.svg" alt="Universidad de Antofagasta">
+                    </a>
+                    <a href="https://www.upla.cl/" target="_blank" rel="noopener noreferrer" title="Universidad de Playa Ancha">
+                        <img class="logo-upla" src="assets/img/upla_logo.png" alt="Universidad de Playa Ancha">
+                    </a>
+                    <a href="https://hubambientalupla.cl/" target="_blank" rel="noopener noreferrer" title="HUB Ambiental UPLA">
+                        <img class="logo-hub" src="assets/img/hub_logo.png" alt="HUB Ambiental Universidad de Playa Ancha">
+                    </a>
+                    <a href="https://teleamb.cl/" target="_blank" rel="noopener noreferrer" title="Laboratorio TeleAmb">
+                        <img class="logo-teleamb" src="assets/img/teleamb_logo.png" alt="Laboratorio TeleAmb">
+                    </a>
+                </nav>
+            </div>
+            <div class="partner-group">
+                <h2>Financia</h2>
+                <nav class="logos">
+                    <a href="https://anid.cl/" target="_blank" rel="noopener noreferrer" title="Agencia Nacional de Investigación y Desarrollo">
+                        <img class="logo-anid" src="assets/img/anid_logo.png" alt="ANID, Agencia Nacional de Investigación y Desarrollo">
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </section>
+
     <footer>
         <div class="wrap">
-            <nav class="logos" aria-label="Instituciones participantes">
-                <a href="https://www.uantof.cl/" target="_blank" rel="noopener noreferrer" title="Universidad de Antofagasta">
-                    <img class="logo-ua" src="assets/img/uantof_logo.svg" alt="Universidad de Antofagasta">
-                </a>
-                <a href="https://www.upla.cl/" target="_blank" rel="noopener noreferrer" title="Universidad de Playa Ancha">
-                    <img src="assets/img/upla_logo.png" alt="Universidad de Playa Ancha">
-                </a>
-                <a href="https://hubambientalupla.cl/" target="_blank" rel="noopener noreferrer" title="HUB Ambiental UPLA">
-                    <img src="assets/img/hub_logo.png" alt="HUB Ambiental Universidad de Playa Ancha">
-                </a>
-                <a href="https://teleamb.cl/" target="_blank" rel="noopener noreferrer" title="Laboratorio TeleAmb">
-                    <img src="assets/img/teleamb_logo.png" alt="Laboratorio TeleAmb">
-                </a>
-            </nav>
-            <p class="footnote">Proyecto Anillo MESS · Resultados preliminares, 2026</p>
+            <span>Proyecto Anillo MESS (ATE240021) · Resultados preliminares, 2026</span>
+            <a href="https://www.instagram.com/anillo.mess/" target="_blank" rel="noopener noreferrer">@anillo.mess en Instagram</a>
         </div>
     </footer>
 </body>
