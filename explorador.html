@@ -354,7 +354,29 @@
             image-rendering: high-quality;
         }
         .sheet-handle { display: none; }
+        .lang-toggle {
+            position: absolute;
+            z-index: 900;
+            top: max(12px, env(safe-area-inset-top));
+            right: max(14px, env(safe-area-inset-right));
+            appearance: none;
+            border: 1px solid rgba(243, 239, 230, 0.45);
+            background: var(--glass);
+            color: var(--salt);
+            font: inherit;
+            font-size: 0.82rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            padding: 0.45rem 0.75rem;
+            border-radius: 2px;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .lang-toggle:hover { border-color: rgba(243, 239, 230, 0.7); background: var(--night-2); }
+        .lang-toggle:focus-visible { outline: 2px solid var(--salt); outline-offset: 3px; }
+        .leaflet-top.leaflet-right { top: 48px; }
         @media (max-width: 720px) {
+            .leaflet-top.leaflet-right { top: 48px; }
             :root { --map-chrome-inset-left: 10px; --sheet-h: 150px; }
             .panel {
                 left: 0;
@@ -436,44 +458,45 @@
         </div>
         <div class="legend-rail legend-rail--right">
             <div class="map-legend-dock drone-opacity" id="droneOpacityWrap" hidden>
-                <div class="drone-opacity-title">Transparencia</div>
-                <div class="drone-opacity-sub">índice sobre RGB</div>
+                <div class="drone-opacity-title" data-i18n="opacity_title">Transparencia</div>
+                <div class="drone-opacity-sub" data-i18n="opacity_sub">índice sobre RGB</div>
                 <div class="drone-opacity-scale">
                     <span class="drone-opacity-value" id="opacityValTop">100%</span>
                     <div class="drone-opacity-slider-wrap">
                         <input type="range" id="droneOpacity" min="0" max="100" value="100"
-                            aria-label="Transparencia del índice sobre RGB">
+                            aria-label="Transparencia del índice sobre RGB" data-i18n-aria="opacity_aria">
                     </div>
                     <span class="drone-opacity-value">0%</span>
                 </div>
             </div>
         </div>
-        <div class="map-note" id="mapNote">Cargando…</div>
-        <aside class="panel" aria-label="Controles del mapa">
-            <button type="button" class="sheet-handle" id="sheetToggle" aria-expanded="false">Más información</button>
+        <div class="map-note" id="mapNote" data-i18n="loading">Cargando…</div>
+        <button type="button" class="lang-toggle" id="lang-toggle" aria-label="Switch to English">EN</button>
+        <aside class="panel" aria-label="Controles del mapa" data-i18n-aria-label="panel_aria">
+            <button type="button" class="sheet-handle" id="sheetToggle" aria-expanded="false" data-i18n="sheet_more">Más información</button>
             <header class="panel-head">
                 <div class="panel-top">
-                    <a class="panel-logo" href="index.html" title="Volver al inicio">
-                        <img src="assets/img/mess_logo_white.png" alt="Proyecto Anillo MESS">
+                    <a class="panel-logo" href="index.html" title="Volver al inicio" data-i18n-title="back_title">
+                        <img src="assets/img/mess_logo_white.png" alt="Proyecto Anillo MESS" data-i18n-alt="brand_alt">
                     </a>
-                    <a class="back" href="index.html">← Inicio</a>
+                    <a class="back" href="index.html" data-i18n="back_home">← Inicio</a>
                 </div>
                 <h1>Salar de Huasco</h1>
-                <p class="sub">Vuelos de dron multiespectral en los sitios P2–P7</p>
+                <p class="sub" data-i18n="panel_sub">Vuelos de dron multiespectral en los sitios P2–P7</p>
             </header>
             <div class="panel-body">
                 <div id="loadHint" hidden></div>
                 <div class="block">
-                    <label for="globalWetland">Sitio de vuelo</label>
+                    <label for="globalWetland" data-i18n="site_label">Sitio de vuelo</label>
                     <select id="globalWetland"></select>
-                    <p class="hint" id="siteHint">También puedes hacer clic en un polígono del mapa.</p>
+                    <p class="hint" id="siteHint" data-i18n="site_hint">También puedes hacer clic en un polígono del mapa.</p>
                 </div>
                 <div class="block">
-                    <span class="block-title">Capa espectral</span>
+                    <span class="block-title" data-i18n="layer_title">Capa espectral</span>
                     <div class="layer-pills" id="layerPills"></div>
                     <div class="index-desc" id="indexDesc" aria-live="polite">
-                        <span class="index-desc__label" id="indexDescLabel">Capa</span>
-                        <p class="index-desc__text" id="indexDescText">Selecciona una capa para ver su descripción.</p>
+                        <span class="index-desc__label" id="indexDescLabel" data-i18n="layer_default">Capa</span>
+                        <p class="index-desc__text" id="indexDescText" data-i18n="layer_pick">Selecciona una capa para ver su descripción.</p>
                     </div>
                     <p class="hint" id="layerHint"></p>
                 </div>
@@ -494,17 +517,176 @@ const state = {
     indexOpacity: 1,
     fitBoundsOnSiteChange: true,
 };
-let mapa, aoiLayer, rasterOverlay, rgbUnderlay;
+let mapa, aoiLayer, rasterOverlay, rgbUnderlay, satLayer, topoLayer, basemapControl;
 
 const LAYER_ORDER = ['rgb', 'ndvi', 'ndci', 'ndwi', 'lst'];
 const INDEX_LAYERS = ['ndvi', 'ndci', 'ndwi', 'lst'];
-const INDEX_DESC_FALLBACK = {
-    rgb: 'La ortomosaico en color verdadero (RGB) es la fotografía de alta resolución del vuelo de dron, como la veríamos a ojo humano desde el aire. Sirve de referencia para orientarse en el terreno y comparar con los índices espectrales.',
-    ndvi: 'El NDVI indica qué tan activa y cubierta de vegetación está una zona. Valores altos (verdes) se asocian a mayor vigor; valores bajos (rojos) a suelo desnudo, salares o estrés. En el Salar de Huasco ayuda a distinguir biomasa frente a fondos salinos.',
-    ndci: 'El NDCI está ligado a la clorofila y pigmentos en vegetación y comunidades algales. Permite detectar zonas con mayor actividad fotosintética o cambios fisiológicos en el humedal.',
-    ndwi: 'El NDWI resalta agua libre o superficies muy húmedas frente a suelos secos y costras salinas. Complementa la foto en color cuando el agua es difícil de ver.',
-    lst: 'La temperatura de superficie (LST) muestra contrastes térmicos entre agua, suelo, vegetación y costras, en grados Celsius estimados desde el sensor térmico del dron.',
+
+const I18N = {
+    es: {
+        page_title: 'Salar de Huasco · Mapa dron',
+        lang_btn: 'EN',
+        lang_aria: 'Switch to English',
+        brand_alt: 'Proyecto Anillo MESS',
+        back_title: 'Volver al inicio',
+        back_home: '← Inicio',
+        panel_aria: 'Controles del mapa',
+        panel_sub: 'Vuelos de dron multiespectral en los sitios P2–P7',
+        sheet_more: 'Más información',
+        sheet_less: 'Ocultar información',
+        site_label: 'Sitio de vuelo',
+        site_hint: 'También puedes hacer clic en un polígono del mapa.',
+        layer_title: 'Capa espectral',
+        layer_default: 'Capa',
+        layer_pick: 'Selecciona una capa para ver su descripción.',
+        layer_fallback: 'Capa espectral del vuelo de dron.',
+        opacity_title: 'Transparencia',
+        opacity_sub: 'índice sobre RGB',
+        opacity_aria: 'Transparencia del índice sobre RGB',
+        loading: 'Cargando…',
+        basemap_sat: 'Satélite',
+        basemap_topo: 'Topográfico',
+        no_layer_image: 'Sin imagen para esta capa en el sitio seleccionado.',
+        flight_index: 'Vuelo del {date}. Usa el control de transparencia (a la derecha del mapa) para ver la foto a color debajo.',
+        flight_rgb: 'Vuelo del {date}.',
+        site_prefix: 'Sitio',
+        click_to_view: ' · clic para ver',
+        pick_site: 'Selecciona un sitio de vuelo.',
+        no_drone_maps: 'Este sitio aún no tiene mapas de dron.',
+        no_layer_site: 'Sin capa para este sitio.',
+        layer_unavailable: 'Capa no disponible.',
+        index_over_rgb: '{label} sobre RGB · transparencia {pct}%',
+        color_photo: 'Foto a color · {date}',
+        load_error: 'No se cargaron los datos. Ejecuta el export y sirve la carpeta con un servidor HTTP.',
+        data_unavailable: 'Datos no disponibles',
+        months: ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+        desc_rgb: 'El ortomosaico en color verdadero (RGB) es la fotografía de alta resolución del vuelo de dron, como la veríamos a ojo humano desde el aire. Sirve de referencia para orientarse en el terreno, reconocer caminos, cuerpos de agua y texturas del salar. Es la base sobre la que se superponen los índices espectrales para comparar «lo que vemos» con «lo que mide el sensor».',
+        desc_ndvi: 'El Índice de Vegetación de Diferencia Normalizada (NDVI) indica qué tan activa y cubierta de vegetación está una zona, comparando la luz reflejada en infrarrojo cercano y rojo visible. Valores altos (tonos verdes en el mapa) se asocian a mayor vigor y cobertura; valores bajos (tonos rojos) a suelo desnudo, salares o estrés. En el Salar de Huasco permite reconocer parches con biomasa microbiana o vascular frente a fondos salinos y áreas áridas del paisaje altoandino.',
+        desc_ndci: 'El Índice de Contenido de Clorofila por Diferencia Normalizada (NDCI) está ligado a la cantidad de clorofila y otros pigmentos en la vegetación y en las comunidades algales del salar. Ayuda a detectar zonas con mayor actividad fotosintética o cambios en el estado fisiológico de las comunidades. Es útil para conversar sobre productividad biológica y posibles estrés ambientales en el humedal.',
+        desc_ndwi: 'El Índice de Agua por Diferencia Normalizada (NDWI) resalta la presencia de agua libre o muy húmeda en la superficie, contrastando el infrarrojo cercano con el verde. En un salar altoandino permite identificar charcas, zonas saturadas o humedales activos frente a suelos secos y costras salinas. Complementa la foto en color cuando el agua es poco visible a simple vista.',
+        desc_lst: 'La Temperatura de Superficie (LST) estima cuántos grados Celsius tiene la superficie vista desde el dron, a partir del sensor térmico. Muestra contrastes entre agua, suelo, vegetación y costras salinas que no siempre se aprecian en la foto RGB. En el contexto del Anillo MESS ayuda a relacionar microclima local, evaporación y heterogeneidad del paisaje con los procesos biogeoquímicos del OE2.',
+    },
+    en: {
+        page_title: 'Salar de Huasco · Drone map',
+        lang_btn: 'ES',
+        lang_aria: 'Cambiar a español',
+        brand_alt: 'MESS Ring Project',
+        back_title: 'Back to home',
+        back_home: '← Home',
+        panel_aria: 'Map controls',
+        panel_sub: 'Multispectral drone flights at sites P2–P7',
+        sheet_more: 'More information',
+        sheet_less: 'Hide information',
+        site_label: 'Flight site',
+        site_hint: 'You can also click a polygon on the map.',
+        layer_title: 'Spectral layer',
+        layer_default: 'Layer',
+        layer_pick: 'Select a layer to see its description.',
+        layer_fallback: 'Spectral layer from the drone flight.',
+        opacity_title: 'Transparency',
+        opacity_sub: 'index over RGB',
+        opacity_aria: 'Transparency of the index over RGB',
+        loading: 'Loading…',
+        basemap_sat: 'Satellite',
+        basemap_topo: 'Topographic',
+        no_layer_image: 'No image for this layer at the selected site.',
+        flight_index: 'Flight of {date}. Use the transparency control (right of the map) to see the color photo underneath.',
+        flight_rgb: 'Flight of {date}.',
+        site_prefix: 'Site',
+        click_to_view: ' · click to view',
+        pick_site: 'Select a flight site.',
+        no_drone_maps: 'This site does not have drone maps yet.',
+        no_layer_site: 'No layer for this site.',
+        layer_unavailable: 'Layer not available.',
+        index_over_rgb: '{label} over RGB · transparency {pct}%',
+        color_photo: 'Color photo · {date}',
+        load_error: 'Data could not be loaded. Run the export and serve the folder with an HTTP server.',
+        data_unavailable: 'Data unavailable',
+        months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+        desc_rgb: 'The true-color (RGB) orthomosaic is the high-resolution photograph from the drone flight, as we would see it with the naked eye from the air. It is a reference for orientation on the ground—paths, water bodies, and salt-flat textures—and the base onto which spectral indices are overlaid to compare what we see with what the sensor measures.',
+        desc_ndvi: 'The Normalized Difference Vegetation Index (NDVI) indicates how active and vegetation-covered an area is, comparing near-infrared and visible red reflectance. High values (green tones) relate to greater vigor and cover; low values (red tones) to bare soil, salt flats, or stress. At Salar de Huasco it helps recognize patches of microbial or vascular biomass against saline backgrounds and arid high-Andean terrain.',
+        desc_ndci: 'The Normalized Difference Chlorophyll Index (NDCI) is linked to chlorophyll and other pigments in vegetation and algal communities of the salt flat. It helps detect zones of higher photosynthetic activity or physiological change, and is useful when discussing biological productivity and possible environmental stress in the wetland.',
+        desc_ndwi: 'The Normalized Difference Water Index (NDWI) highlights free water or very wet surfaces by contrasting near-infrared with green. In a high-Andean salt flat it helps identify ponds, saturated zones, or active wetlands against dry soils and salt crusts, and complements the color photo when water is hard to see.',
+        desc_lst: 'Land Surface Temperature (LST) estimates surface temperature in degrees Celsius from the drone thermal sensor. It shows contrasts among water, soil, vegetation, and salt crusts that are not always visible in the RGB photo, and in the MESS Ring context helps relate local microclimate, evaporation, and landscape heterogeneity to OE2 biogeochemical processes.',
+    },
 };
+
+let lang = localStorage.getItem('salares-lang') || 'es';
+
+function t(key, vars) {
+    const dict = I18N[lang] || I18N.es;
+    let s = dict[key];
+    if (s == null) s = (I18N.es[key] != null ? I18N.es[key] : key);
+    if (vars) {
+        Object.keys(vars).forEach(function (k) {
+            s = String(s).split('{' + k + '}').join(vars[k]);
+        });
+    }
+    return s;
+}
+
+function applyStaticI18n() {
+    document.documentElement.lang = lang;
+    document.title = t('page_title');
+    const btn = document.getElementById('lang-toggle');
+    if (btn) {
+        btn.textContent = t('lang_btn');
+        btn.setAttribute('aria-label', t('lang_aria'));
+    }
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        if (el.id === 'sheetToggle') return;
+        el.textContent = t(el.getAttribute('data-i18n'));
+    });
+    const sheetBtn = document.getElementById('sheetToggle');
+    const panel = document.querySelector('.panel');
+    if (sheetBtn && panel) {
+        sheetBtn.textContent = panel.classList.contains('expanded') ? t('sheet_less') : t('sheet_more');
+    }
+    document.querySelectorAll('[data-i18n-alt]').forEach(function (el) {
+        el.setAttribute('alt', t(el.getAttribute('data-i18n-alt')));
+    });
+    document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+        el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria')));
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(function (el) {
+        el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria-label')));
+    });
+    document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+        el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
+    });
+}
+
+function refreshBasemapControl() {
+    if (!mapa || !satLayer || !topoLayer) return;
+    const wasSat = mapa.hasLayer(satLayer);
+    if (basemapControl) mapa.removeControl(basemapControl);
+    const layers = {};
+    layers[t('basemap_sat')] = satLayer;
+    layers[t('basemap_topo')] = topoLayer;
+    basemapControl = L.control.layers(layers, {}, { position: 'topright' }).addTo(mapa);
+    if (wasSat) {
+        if (!mapa.hasLayer(satLayer)) satLayer.addTo(mapa);
+        if (mapa.hasLayer(topoLayer)) mapa.removeLayer(topoLayer);
+    } else {
+        if (!mapa.hasLayer(topoLayer)) topoLayer.addTo(mapa);
+        if (mapa.hasLayer(satLayer)) mapa.removeLayer(satLayer);
+    }
+}
+
+function applyLanguage() {
+    applyStaticI18n();
+    refreshBasemapControl();
+    const panel = document.querySelector('.panel');
+    if (panel) setSheetExpanded(panel.classList.contains('expanded'));
+    if (state.metadata) {
+        buildWetlandSelect();
+        buildLayerPills();
+        updateIndexDescription();
+        updateLayerHint();
+        renderAOI();
+        updateMapOverlay(false);
+    }
+}
 
 function isIndexLayer(kind) {
     return INDEX_LAYERS.indexOf(String(kind).toLowerCase()) >= 0;
@@ -554,14 +736,14 @@ function initMap() {
     });
     L.control.zoom({ position: 'topright' }).addTo(mapa);
     L.control.scale({ imperial: false, position: 'bottomleft' }).addTo(mapa);
-    const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         attribution: '© Esri', maxZoom: 22, maxNativeZoom: 17,
     });
-    const topo = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+    topoLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
         attribution: '© Esri', maxZoom: 22,
     });
-    sat.addTo(mapa);
-    L.control.layers({ 'Satélite': sat, 'Topográfico': topo }, {}, { position: 'topright' }).addTo(mapa);
+    satLayer.addTo(mapa);
+    refreshBasemapControl();
 }
 
 async function fetchJson(url) {
@@ -638,34 +820,42 @@ function updateIndexDescription() {
     if (!labelEl || !textEl) return;
     const kind = String(state.mapLayerKind || '').toLowerCase();
     const info = (meta().indices || {})[kind] || {};
-    labelEl.textContent = info.label || kind.toUpperCase();
-    textEl.textContent = info.description || INDEX_DESC_FALLBACK[kind] || 'Capa espectral del vuelo de dron.';
+    labelEl.textContent = info.label || kind.toUpperCase() || t('layer_default');
+    const desc = (I18N[lang] || I18N.es)['desc_' + kind];
+    textEl.textContent = desc || info.description || t('layer_fallback');
 }
 
 function updateLayerHint() {
     const el = document.getElementById('layerHint');
     if (!el) return;
     if (!state.mapPeriodKey) {
-        el.textContent = 'Sin imagen para esta capa en el sitio seleccionado.';
+        el.textContent = t('no_layer_image');
         el.hidden = false;
         return;
     }
     const date = formatFlightDate(state.mapPeriodKey);
     if (isIndexLayer(state.mapLayerKind)) {
-        el.textContent = 'Vuelo del ' + date + '. Usa el control de transparencia (a la derecha del mapa) para ver la foto a color debajo.';
+        el.textContent = t('flight_index', { date: date });
     } else {
-        el.textContent = 'Vuelo del ' + date + '.';
+        el.textContent = t('flight_rgb', { date: date });
     }
     el.hidden = false;
 }
 
-const MONTHS_ES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto',
-    'septiembre', 'octubre', 'noviembre', 'diciembre'];
-
 function formatFlightDate(periodKey) {
     const m = /^(\d{4})(\d{2})(\d{2})/.exec(String(periodKey || ''));
     if (!m) return String(periodKey || '');
-    return Number(m[3]) + ' de ' + MONTHS_ES[Number(m[2]) - 1] + ' de ' + m[1];
+    const day = Number(m[3]);
+    const month = t('months')[Number(m[2]) - 1];
+    const year = m[1];
+    if (lang === 'en') return day + ' ' + month + ' ' + year;
+    return day + ' de ' + month + ' de ' + year;
+}
+
+function wetlandDisplayName(wid, info) {
+    const raw = (info && info.name) || wid.toUpperCase();
+    if (lang === 'en') return String(raw).replace(/^Sitio\b/i, t('site_prefix'));
+    return raw;
 }
 
 function buildWetlandSelect() {
@@ -677,7 +867,7 @@ function buildWetlandSelect() {
         const info = wetlands[wid] || {};
         const opt = document.createElement('option');
         opt.value = wid;
-        opt.textContent = info.name || wid.toUpperCase();
+        opt.textContent = wetlandDisplayName(wid, info);
         sel.appendChild(opt);
     });
     const ready = keys.filter(function (w) {
@@ -726,7 +916,8 @@ function renderAOI() {
             const wid = String(f.properties[idCol] || '');
             const info = (meta().wetlands || {})[wid] || {};
             const active = wid.toLowerCase() === state.selectedWetland;
-            layer.bindTooltip(active ? (info.name || wid) : (info.name || wid) + ' · clic para ver', { sticky: true });
+            const name = wetlandDisplayName(wid, info);
+            layer.bindTooltip(active ? name : name + t('click_to_view'), { sticky: true });
             if (active) return;
             layer.on('mouseover', function () { layer.setStyle({ weight: 3, dashArray: '', fillColor: '#f3efe6', fillOpacity: 0.12 }); });
             layer.on('mouseout', function () { aoiLayer.resetStyle(layer); });
@@ -749,7 +940,7 @@ function setSheetExpanded(expanded) {
     panel.classList.toggle('expanded', expanded);
     document.body.classList.toggle('sheet-open', expanded);
     btn.setAttribute('aria-expanded', String(expanded));
-    btn.textContent = expanded ? 'Ocultar información' : 'Más información';
+    btn.textContent = expanded ? t('sheet_less') : t('sheet_more');
 }
 
 function initMobileSheet() {
@@ -836,14 +1027,14 @@ function updateMapOverlay(doFitBounds) {
     updateOpacityVisibility();
 
     if (!state.selectedWetland) {
-        note.textContent = 'Selecciona un sitio de vuelo.';
+        note.textContent = t('pick_site');
         return;
     }
     if (!state.mapPeriodKey) {
         const info = (meta().wetlands || {})[state.selectedWetland] || {};
         note.textContent = (info.n_periods || 0) === 0
-            ? 'Este sitio aún no tiene mapas de dron.'
-            : 'Sin capa para este sitio.';
+            ? t('no_drone_maps')
+            : t('no_layer_site');
         if (doFitBounds || state.fitBoundsOnSiteChange) {
             fitAoi();
             state.fitBoundsOnSiteChange = false;
@@ -857,7 +1048,7 @@ function updateMapOverlay(doFitBounds) {
     const raster = getRaster(wid, period, kind);
 
     if (!raster || !raster.visual) {
-        note.textContent = 'Capa no disponible.';
+        note.textContent = t('layer_unavailable');
         if (doFitBounds || state.fitBoundsOnSiteChange) {
             fitAoi();
             state.fitBoundsOnSiteChange = false;
@@ -877,11 +1068,11 @@ function updateMapOverlay(doFitBounds) {
         rasterOverlay = addImageOverlay(raster, op);
         updateColorbar(kind);
         const idxMeta = (meta().indices || {})[kind];
-        note.textContent = (idxMeta && idxMeta.label ? idxMeta.label : kind.toUpperCase()) +
-            ' sobre RGB · transparencia ' + Math.round(op * 100) + '%';
+        const label = idxMeta && idxMeta.label ? idxMeta.label : kind.toUpperCase();
+        note.textContent = t('index_over_rgb', { label: label, pct: Math.round(op * 100) });
     } else {
         rasterOverlay = addImageOverlay(raster, 1);
-        note.textContent = 'Foto a color · ' + formatFlightDate(period);
+        note.textContent = t('color_photo', { date: formatFlightDate(period) });
     }
 
     if (doFitBounds || state.fitBoundsOnSiteChange) {
@@ -902,8 +1093,8 @@ async function loadAll() {
         state.aoi = await fetchJson(BASE + '/' + aoiPath);
     } catch (e) {
         hint.hidden = false;
-        hint.textContent = 'No se cargaron los datos. Ejecuta el export y sirve la carpeta con un servidor HTTP.';
-        document.getElementById('mapNote').textContent = 'Datos no disponibles';
+        hint.textContent = t('load_error');
+        document.getElementById('mapNote').textContent = t('data_unavailable');
         return;
     }
     hint.hidden = true;
@@ -929,8 +1120,14 @@ async function loadAll() {
 }
 
 window.addEventListener('load', function () {
+    applyStaticI18n();
     initMap();
     initMobileSheet();
+    document.getElementById('lang-toggle').addEventListener('click', function () {
+        lang = lang === 'es' ? 'en' : 'es';
+        localStorage.setItem('salares-lang', lang);
+        applyLanguage();
+    });
     document.getElementById('droneOpacity').addEventListener('input', function (e) {
         state.indexOpacity = Number(e.target.value) / 100;
         document.getElementById('opacityValTop').textContent = e.target.value + '%';
