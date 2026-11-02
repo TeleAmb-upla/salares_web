@@ -54,6 +54,22 @@
         .brand:hover { text-decoration: none !important; }
         .brand img { display: block; height: 52px; width: auto; }
         .brand span { padding-left: 0.9rem; border-left: 1px solid rgba(243, 239, 230, 0.4); line-height: 1.2; }
+        .lang-toggle {
+            appearance: none;
+            border: 1px solid rgba(243, 239, 230, 0.45);
+            background: rgba(17, 22, 24, 0.35);
+            color: var(--salt);
+            font: inherit;
+            font-size: 0.82rem;
+            font-weight: 500;
+            letter-spacing: 0.04em;
+            padding: 0.45rem 0.75rem;
+            border-radius: 2px;
+            cursor: pointer;
+            backdrop-filter: blur(6px);
+        }
+        .lang-toggle:hover { background: rgba(17, 22, 24, 0.55); border-color: rgba(243, 239, 230, 0.7); }
+        .lang-toggle:focus-visible { outline: 2px solid var(--salt); outline-offset: 3px; }
 
         /* Portada */
         .hero {
@@ -302,25 +318,26 @@
 <body>
     <header class="topbar">
         <a class="brand" href="index.html">
-            <img src="assets/img/mess_logo_white.png" alt="Proyecto Anillo MESS">
+            <img src="assets/img/mess_logo_white.png" alt="Proyecto Anillo MESS" data-i18n-alt="brand_alt">
             <span>Salar de Huasco</span>
         </a>
+        <button type="button" class="lang-toggle" id="lang-toggle" aria-label="Switch to English" data-i18n-aria="lang_aria">EN</button>
     </header>
 
-    <section class="hero" aria-label="Portada">
+    <section class="hero" aria-label="Portada" data-i18n-aria-label="hero_aria">
         <div class="hero-inner">
-            <h1>Salar de Huasco<em>visto desde el cielo</em></h1>
-            <p class="lead">
+            <h1 data-i18n-html="hero_title">Salar de Huasco<em>visto desde el cielo</em></h1>
+            <p class="lead" data-i18n="hero_lead">
                 Una ventana abierta al trabajo del Anillo de Salares: mapas de alta resolución
                 para conocer mejor un humedal altoandino único.
             </p>
             <div class="hero-actions">
-                <a class="btn" href="explorador.html">Entrar al mapa interactivo</a>
-                <a class="text-link" href="#capas">Ver las capas</a>
+                <a class="btn" href="explorador.html" data-i18n="cta_map">Entrar al mapa interactivo</a>
+                <a class="text-link" href="#capas" data-i18n="cta_layers">Ver las capas</a>
             </div>
             <div class="hero-meta">
-                <span>20°19′ S, 68°50′ O · 3 800 m s.n.m.</span>
-                <span>Sitio P4, vuelo del 27 de enero de 2026</span>
+                <span data-i18n="hero_coords">20°19′ S, 68°50′ O · 3 800 m s.n.m.</span>
+                <span data-i18n="hero_flight">Sitio P4, vuelo del 27 de enero de 2026</span>
             </div>
         </div>
     </section>
@@ -328,8 +345,8 @@
     <section class="layers" id="capas">
         <div class="wrap">
             <div class="section-head">
-                <h2>Cinco lecturas de un mismo paisaje</h2>
-                <p>
+                <h2 data-i18n="layers_title">Cinco lecturas de un mismo paisaje</h2>
+                <p data-i18n="layers_lead">
                     Cada vuelo registra la luz reflejada en varias bandas del espectro. Al combinarlas
                     aparecen la vegetación, el agua, los pigmentos y el calor de la superficie,
                     que la foto en color no muestra a simple vista.
@@ -338,44 +355,44 @@
             <div class="tiles">
                 <div class="tile">
                     <a href="explorador.html?sitio=p4&amp;capa=rgb">
-                        <img src="assets/img/huasco/tile_rgb.webp" alt="Ortomosaico en color verdadero del sitio P4" loading="lazy">
-                        <span class="tile-cap"><b>RGB</b>Color verdadero<code>Rojo · Verde · Azul</code><span class="open">Ver en el mapa</span></span>
+                        <img src="assets/img/huasco/tile_rgb.webp" alt="Ortomosaico en color verdadero del sitio P4" loading="lazy" data-i18n-alt="tile_rgb_alt">
+                        <span class="tile-cap"><b>RGB</b><span data-i18n="tile_rgb_cap">Color verdadero</span><code data-i18n="tile_rgb_code">Rojo · Verde · Azul</code><span class="open" data-i18n="tile_open">Ver en el mapa</span></span>
                     </a>
                 </div>
                 <div class="tile">
                     <a href="explorador.html?sitio=p4&amp;capa=ndvi">
-                        <img src="assets/img/huasco/tile_ndvi.webp" alt="NDVI del sitio P4" loading="lazy">
-                        <span class="tile-cap"><b>NDVI</b>Vigor de la vegetación<code>(NIR − R) / (NIR + R)</code><span class="open">Ver en el mapa</span></span>
+                        <img src="assets/img/huasco/tile_ndvi.webp" alt="NDVI del sitio P4" loading="lazy" data-i18n-alt="tile_ndvi_alt">
+                        <span class="tile-cap"><b>NDVI</b><span data-i18n="tile_ndvi_cap">Vigor de la vegetación</span><code>(NIR − R) / (NIR + R)</code><span class="open" data-i18n="tile_open">Ver en el mapa</span></span>
                     </a>
                 </div>
                 <div class="tile">
                     <a href="explorador.html?sitio=p4&amp;capa=ndci">
-                        <img src="assets/img/huasco/tile_ndci.webp" alt="NDCI del sitio P4" loading="lazy">
-                        <span class="tile-cap"><b>NDCI</b>Clorofila y pigmentos<code>(RE − R) / (RE + R)</code><span class="open">Ver en el mapa</span></span>
+                        <img src="assets/img/huasco/tile_ndci.webp" alt="NDCI del sitio P4" loading="lazy" data-i18n-alt="tile_ndci_alt">
+                        <span class="tile-cap"><b>NDCI</b><span data-i18n="tile_ndci_cap">Clorofila y pigmentos</span><code>(RE − R) / (RE + R)</code><span class="open" data-i18n="tile_open">Ver en el mapa</span></span>
                     </a>
                 </div>
                 <div class="tile">
                     <a href="explorador.html?sitio=p4&amp;capa=ndwi">
-                        <img src="assets/img/huasco/tile_ndwi.webp" alt="NDWI del sitio P4" loading="lazy">
-                        <span class="tile-cap"><b>NDWI</b>Agua superficial<code>(G − NIR) / (G + NIR)</code><span class="open">Ver en el mapa</span></span>
+                        <img src="assets/img/huasco/tile_ndwi.webp" alt="NDWI del sitio P4" loading="lazy" data-i18n-alt="tile_ndwi_alt">
+                        <span class="tile-cap"><b>NDWI</b><span data-i18n="tile_ndwi_cap">Agua superficial</span><code>(G − NIR) / (G + NIR)</code><span class="open" data-i18n="tile_open">Ver en el mapa</span></span>
                     </a>
                 </div>
                 <div class="tile">
                     <a href="explorador.html?sitio=p4&amp;capa=lst">
-                        <img src="assets/img/huasco/tile_lst.webp" alt="Temperatura de superficie del sitio P4" loading="lazy">
-                        <span class="tile-cap"><b>LST</b>Temperatura de superficie<code>Infrarrojo térmico, °C</code><span class="open">Ver en el mapa</span></span>
+                        <img src="assets/img/huasco/tile_lst.webp" alt="Temperatura de superficie del sitio P4" loading="lazy" data-i18n-alt="tile_lst_alt">
+                        <span class="tile-cap"><b>LST</b><span data-i18n="tile_lst_cap">Temperatura de superficie</span><code data-i18n="tile_lst_code">Infrarrojo térmico, °C</code><span class="open" data-i18n="tile_open">Ver en el mapa</span></span>
                     </a>
                 </div>
             </div>
-            <p class="caption">Detalle del sitio P4, vuelo del 27 de enero de 2026. R = rojo, G = verde, RE = borde rojo, NIR = infrarrojo cercano.</p>
+            <p class="caption" data-i18n="layers_caption">Detalle del sitio P4, vuelo del 27 de enero de 2026. R = rojo, G = verde, RE = borde rojo, NIR = infrarrojo cercano.</p>
         </div>
     </section>
 
     <section class="about">
         <div class="wrap">
             <div class="section-head">
-                <h2>Microbios, gases y paisaje</h2>
-                <p>
+                <h2 data-i18n="about_title">Microbios, gases y paisaje</h2>
+                <p data-i18n="about_lead">
                     Un acercamiento visual al Salar de Huasco dentro del sitio web del Anillo MESS,
                     pensado para compartir resultados con comunidad, estudiantes y equipos colaboradores.
                 </p>
@@ -384,17 +401,17 @@
                 <article class="chapter">
                     <span class="num">01</span>
                     <div>
-                        <h3>¿De qué se trata el Anillo MESS?</h3>
+                        <h3 data-i18n="ch1_title">¿De qué se trata el Anillo MESS?</h3>
                         <span>Microbial Ecosystem Services of Salares</span>
                     </div>
                     <div>
-                        <p>
+                        <p data-i18n-html="ch1_p1">
                             El proyecto <strong>MESS</strong> reúne a equipos de varias universidades para
                             estudiar los <strong>servicios ecosistémicos microbianos</strong> en los salares
                             del norte de Chile: su diversidad, su papel en los ciclos de nutrientes y gases
                             de efecto invernadero, y su valor para la sociedad.
                         </p>
-                        <p>
+                        <p data-i18n-html="ch1_p2">
                             Esta página es una <strong>base preliminar de difusión</strong> de ese trabajo.
                         </p>
                     </div>
@@ -402,16 +419,16 @@
                 <article class="chapter">
                     <span class="num">02</span>
                     <div>
-                        <h3>Objetivo específico 2 y este mapa</h3>
+                        <h3 data-i18n="ch2_title">Objetivo específico 2 y este mapa</h3>
                     </div>
                     <div>
-                        <p>
+                        <p data-i18n-html="ch2_p1">
                             El <strong>objetivo específico 2</strong> aborda los <strong>ciclos biogeoquímicos
                             y el cambio climático</strong>: comprender cómo las comunidades microbianas participan
                             en el intercambio de gases y en la dinámica del salar, desde la escala del suelo
                             hasta paisajes enteros.
                         </p>
-                        <p>
+                        <p data-i18n-html="ch2_p2">
                             Aquí mostramos un avance con <strong>vuelos de dron</strong> en los sitios
                             <strong>P2–P7</strong> del salar (incluido <strong>P7 / H3</strong>): una mirada
                             mucho más detallada que la de los satélites habituales.
@@ -421,16 +438,16 @@
                 <article class="chapter">
                     <span class="num">03</span>
                     <div>
-                        <h3>Qué puedes explorar</h3>
+                        <h3 data-i18n="ch3_title">Qué puedes explorar</h3>
                     </div>
                     <div>
-                        <p>
+                        <p data-i18n-html="ch3_p1">
                             En el mapa interactivo puedes recorrer el polígono de cada vuelo, cambiar entre
                             <strong>color natural</strong>, <strong>vegetación</strong>, <strong>clorofila</strong>,
                             <strong>agua superficial</strong> y <strong>temperatura</strong>, y ajustar la
                             transparencia para comparar capas sobre la foto base.
                         </p>
-                        <p>
+                        <p data-i18n="ch3_p2">
                             Es un resultado en construcción: el sitio P1 se incorporará cuando estén listos
                             sus datos georreferenciados, y no todos los vuelos tienen todas las capas
                             (por ejemplo, P5 no tiene registro térmico).
@@ -443,22 +460,22 @@
 
     <section class="cta-band">
         <div class="wrap">
-            <h2>Recorre el salar capa por capa</h2>
-            <p>Seis sitios de vuelo y un control de transparencia para comparar lo que vemos con lo que mide el sensor.</p>
-            <a class="btn" href="explorador.html">Entrar al mapa interactivo</a>
+            <h2 data-i18n="cta_title">Recorre el salar capa por capa</h2>
+            <p data-i18n="cta_lead">Seis sitios de vuelo y un control de transparencia para comparar lo que vemos con lo que mide el sensor.</p>
+            <a class="btn" href="explorador.html" data-i18n="cta_map">Entrar al mapa interactivo</a>
         </div>
     </section>
 
-    <section class="partners" aria-label="Instituciones">
+    <section class="partners" aria-label="Instituciones" data-i18n-aria-label="partners_aria">
         <div class="wrap partners-inner">
             <div class="partner-group">
-                <h2>Un proyecto de</h2>
+                <h2 data-i18n="partners_project">Un proyecto de</h2>
                 <div class="logos">
-                    <img class="logo-mess" src="assets/img/mess_logo_green.png" alt="Proyecto Anillo MESS">
+                    <img class="logo-mess" src="assets/img/mess_logo_green.png" alt="Proyecto Anillo MESS" data-i18n-alt="brand_alt">
                 </div>
             </div>
             <div class="partner-group">
-                <h2>Instituciones participantes</h2>
+                <h2 data-i18n="partners_institutions">Instituciones participantes</h2>
                 <nav class="logos">
                     <a href="https://www.uantof.cl/" target="_blank" rel="noopener noreferrer" title="Universidad de Antofagasta">
                         <img class="logo-ua" src="assets/img/uantof_logo.svg" alt="Universidad de Antofagasta">
@@ -475,10 +492,10 @@
                 </nav>
             </div>
             <div class="partner-group">
-                <h2>Financia</h2>
+                <h2 data-i18n="partners_funded">Financia</h2>
                 <nav class="logos">
-                    <a href="https://anid.cl/" target="_blank" rel="noopener noreferrer" title="Agencia Nacional de Investigación y Desarrollo">
-                        <img class="logo-anid" src="assets/img/anid_logo.png" alt="ANID, Agencia Nacional de Investigación y Desarrollo">
+                    <a href="https://anid.cl/" target="_blank" rel="noopener noreferrer" title="Agencia Nacional de Investigación y Desarrollo" data-i18n-title="anid_title">
+                        <img class="logo-anid" src="assets/img/anid_logo.png" alt="ANID, Agencia Nacional de Investigación y Desarrollo" data-i18n-alt="anid_alt">
                     </a>
                 </nav>
             </div>
@@ -487,9 +504,155 @@
 
     <footer>
         <div class="wrap">
-            <span>Proyecto Anillo MESS (ATE240021) · Resultados preliminares, 2026</span>
-            <a href="https://www.instagram.com/anillo.mess/" target="_blank" rel="noopener noreferrer">@anillo.mess en Instagram</a>
+            <span data-i18n="footer_copy">Proyecto Anillo MESS (ATE240021) · Resultados preliminares, 2026</span>
+            <a href="https://www.instagram.com/anillo.mess/" target="_blank" rel="noopener noreferrer" data-i18n="footer_ig">@anillo.mess en Instagram</a>
         </div>
     </footer>
+
+    <script>
+        (function () {
+            var translations = {
+                es: {
+                    page_title: 'Salar de Huasco · Anillo MESS',
+                    lang_btn: 'EN',
+                    lang_aria: 'Switch to English',
+                    brand_alt: 'Proyecto Anillo MESS',
+                    hero_aria: 'Portada',
+                    hero_title: 'Salar de Huasco<em>visto desde el cielo</em>',
+                    hero_lead: 'Una ventana abierta al trabajo del Anillo de Salares: mapas de alta resolución para conocer mejor un humedal altoandino único.',
+                    cta_map: 'Entrar al mapa interactivo',
+                    cta_layers: 'Ver las capas',
+                    hero_coords: '20°19′ S, 68°50′ O · 3 800 m s.n.m.',
+                    hero_flight: 'Sitio P4, vuelo del 27 de enero de 2026',
+                    layers_title: 'Cinco lecturas de un mismo paisaje',
+                    layers_lead: 'Cada vuelo registra la luz reflejada en varias bandas del espectro. Al combinarlas aparecen la vegetación, el agua, los pigmentos y el calor de la superficie, que la foto en color no muestra a simple vista.',
+                    tile_rgb_alt: 'Ortomosaico en color verdadero del sitio P4',
+                    tile_rgb_cap: 'Color verdadero',
+                    tile_rgb_code: 'Rojo · Verde · Azul',
+                    tile_ndvi_alt: 'NDVI del sitio P4',
+                    tile_ndvi_cap: 'Vigor de la vegetación',
+                    tile_ndci_alt: 'NDCI del sitio P4',
+                    tile_ndci_cap: 'Clorofila y pigmentos',
+                    tile_ndwi_alt: 'NDWI del sitio P4',
+                    tile_ndwi_cap: 'Agua superficial',
+                    tile_lst_alt: 'Temperatura de superficie del sitio P4',
+                    tile_lst_cap: 'Temperatura de superficie',
+                    tile_lst_code: 'Infrarrojo térmico, °C',
+                    tile_open: 'Ver en el mapa',
+                    layers_caption: 'Detalle del sitio P4, vuelo del 27 de enero de 2026. R = rojo, G = verde, RE = borde rojo, NIR = infrarrojo cercano.',
+                    about_title: 'Microbios, gases y paisaje',
+                    about_lead: 'Un acercamiento visual al Salar de Huasco dentro del sitio web del Anillo MESS, pensado para compartir resultados con comunidad, estudiantes y equipos colaboradores.',
+                    ch1_title: '¿De qué se trata el Anillo MESS?',
+                    ch1_p1: 'El proyecto <strong>MESS</strong> reúne a equipos de varias universidades para estudiar los <strong>servicios ecosistémicos microbianos</strong> en los salares del norte de Chile: su diversidad, su papel en los ciclos de nutrientes y gases de efecto invernadero, y su valor para la sociedad.',
+                    ch1_p2: 'Esta página es una <strong>base preliminar de difusión</strong> de ese trabajo.',
+                    ch2_title: 'Objetivo específico 2 y este mapa',
+                    ch2_p1: 'El <strong>objetivo específico 2</strong> aborda los <strong>ciclos biogeoquímicos y el cambio climático</strong>: comprender cómo las comunidades microbianas participan en el intercambio de gases y en la dinámica del salar, desde la escala del suelo hasta paisajes enteros.',
+                    ch2_p2: 'Aquí mostramos un avance con <strong>vuelos de dron</strong> en los sitios <strong>P2–P7</strong> del salar (incluido <strong>P7 / H3</strong>): una mirada mucho más detallada que la de los satélites habituales.',
+                    ch3_title: 'Qué puedes explorar',
+                    ch3_p1: 'En el mapa interactivo puedes recorrer el polígono de cada vuelo, cambiar entre <strong>color natural</strong>, <strong>vegetación</strong>, <strong>clorofila</strong>, <strong>agua superficial</strong> y <strong>temperatura</strong>, y ajustar la transparencia para comparar capas sobre la foto base.',
+                    ch3_p2: 'Es un resultado en construcción: el sitio P1 se incorporará cuando estén listos sus datos georreferenciados, y no todos los vuelos tienen todas las capas (por ejemplo, P5 no tiene registro térmico).',
+                    cta_title: 'Recorre el salar capa por capa',
+                    cta_lead: 'Seis sitios de vuelo y un control de transparencia para comparar lo que vemos con lo que mide el sensor.',
+                    partners_aria: 'Instituciones',
+                    partners_project: 'Un proyecto de',
+                    partners_institutions: 'Instituciones participantes',
+                    partners_funded: 'Financia',
+                    anid_title: 'Agencia Nacional de Investigación y Desarrollo',
+                    anid_alt: 'ANID, Agencia Nacional de Investigación y Desarrollo',
+                    footer_copy: 'Proyecto Anillo MESS (ATE240021) · Resultados preliminares, 2026',
+                    footer_ig: '@anillo.mess en Instagram'
+                },
+                en: {
+                    page_title: 'Salar de Huasco · MESS Ring',
+                    lang_btn: 'ES',
+                    lang_aria: 'Cambiar a español',
+                    brand_alt: 'MESS Ring Project',
+                    hero_aria: 'Cover',
+                    hero_title: 'Salar de Huasco<em>seen from above</em>',
+                    hero_lead: 'An open window onto the work of the Salares Ring: high-resolution maps to better understand a unique high-Andean wetland.',
+                    cta_map: 'Enter the interactive map',
+                    cta_layers: 'See the layers',
+                    hero_coords: '20°19′ S, 68°50′ W · 3,800 m a.s.l.',
+                    hero_flight: 'Site P4, flight of 27 January 2026',
+                    layers_title: 'Five readings of the same landscape',
+                    layers_lead: 'Each flight records light reflected across several bands of the spectrum. Combining them reveals vegetation, water, pigments, and surface heat that a color photo alone does not show.',
+                    tile_rgb_alt: 'True-color orthomosaic of site P4',
+                    tile_rgb_cap: 'True color',
+                    tile_rgb_code: 'Red · Green · Blue',
+                    tile_ndvi_alt: 'NDVI of site P4',
+                    tile_ndvi_cap: 'Vegetation vigor',
+                    tile_ndci_alt: 'NDCI of site P4',
+                    tile_ndci_cap: 'Chlorophyll and pigments',
+                    tile_ndwi_alt: 'NDWI of site P4',
+                    tile_ndwi_cap: 'Surface water',
+                    tile_lst_alt: 'Land surface temperature of site P4',
+                    tile_lst_cap: 'Land surface temperature',
+                    tile_lst_code: 'Thermal infrared, °C',
+                    tile_open: 'View on the map',
+                    layers_caption: 'Detail of site P4, flight of 27 January 2026. R = red, G = green, RE = red edge, NIR = near infrared.',
+                    about_title: 'Microbes, gases, and landscape',
+                    about_lead: 'A visual approach to Salar de Huasco within the MESS Ring website, designed to share results with communities, students, and collaborating teams.',
+                    ch1_title: 'What is the MESS Ring about?',
+                    ch1_p1: 'The <strong>MESS</strong> project brings together teams from several universities to study <strong>microbial ecosystem services</strong> in the salt flats of northern Chile: their diversity, their role in nutrient and greenhouse-gas cycles, and their value to society.',
+                    ch1_p2: 'This page is a <strong>preliminary outreach base</strong> for that work.',
+                    ch2_title: 'Specific objective 2 and this map',
+                    ch2_p1: '<strong>Specific objective 2</strong> addresses <strong>biogeochemical cycles and climate change</strong>: understanding how microbial communities take part in gas exchange and in the dynamics of the salt flat, from the soil scale to entire landscapes.',
+                    ch2_p2: 'Here we show progress from <strong>drone flights</strong> at sites <strong>P2–P7</strong> of the salt flat (including <strong>P7 / H3</strong>): a much more detailed view than that of typical satellites.',
+                    ch3_title: 'What you can explore',
+                    ch3_p1: 'In the interactive map you can travel each flight polygon, switch between <strong>natural color</strong>, <strong>vegetation</strong>, <strong>chlorophyll</strong>, <strong>surface water</strong>, and <strong>temperature</strong>, and adjust transparency to compare layers over the base photo.',
+                    ch3_p2: 'This is a work in progress: site P1 will be added once its georeferenced data are ready, and not every flight has every layer (for example, P5 has no thermal record).',
+                    cta_title: 'Explore the salt flat layer by layer',
+                    cta_lead: 'Six flight sites and a transparency control to compare what we see with what the sensor measures.',
+                    partners_aria: 'Institutions',
+                    partners_project: 'A project of',
+                    partners_institutions: 'Participating institutions',
+                    partners_funded: 'Funded by',
+                    anid_title: 'National Agency for Research and Development',
+                    anid_alt: 'ANID, National Agency for Research and Development',
+                    footer_copy: 'MESS Ring Project (ATE240021) · Preliminary results, 2026',
+                    footer_ig: '@anillo.mess on Instagram'
+                }
+            };
+
+            var btn = document.getElementById('lang-toggle');
+            var lang = localStorage.getItem('salares-lang') || 'es';
+
+            function apply(langCode) {
+                var t = translations[langCode];
+                if (!t) return;
+                document.documentElement.lang = langCode;
+                document.title = t.page_title;
+                btn.textContent = t.lang_btn;
+                btn.setAttribute('aria-label', t.lang_aria);
+
+                document.querySelectorAll('[data-i18n]').forEach(function (el) {
+                    el.textContent = t[el.getAttribute('data-i18n')];
+                });
+                document.querySelectorAll('[data-i18n-html]').forEach(function (el) {
+                    el.innerHTML = t[el.getAttribute('data-i18n-html')];
+                });
+                document.querySelectorAll('[data-i18n-alt]').forEach(function (el) {
+                    el.setAttribute('alt', t[el.getAttribute('data-i18n-alt')]);
+                });
+                document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+                    el.setAttribute('aria-label', t[el.getAttribute('data-i18n-aria')]);
+                });
+                document.querySelectorAll('[data-i18n-aria-label]').forEach(function (el) {
+                    el.setAttribute('aria-label', t[el.getAttribute('data-i18n-aria-label')]);
+                });
+                document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+                    el.setAttribute('title', t[el.getAttribute('data-i18n-title')]);
+                });
+            }
+
+            apply(lang);
+
+            btn.addEventListener('click', function () {
+                lang = lang === 'es' ? 'en' : 'es';
+                localStorage.setItem('salares-lang', lang);
+                apply(lang);
+            });
+        })();
+    </script>
 </body>
 </html>
